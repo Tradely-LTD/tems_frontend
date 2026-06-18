@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+.env
+.env.*
+*.key
+*.pem
+*.log
+coverage/
+.DS_Store

@@ -1,0 +1,26 @@
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .waybill-pass-card {
+    width: 100%;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/* Top-level @page rules for size selection via class toggling on <html> */
+@page {
+  size: A5 portrait;
+  margin: 10mm;
+}
+
+.page-a4 @page {
+  size: A4 portrait;
+  margin: 15mm;
+}
