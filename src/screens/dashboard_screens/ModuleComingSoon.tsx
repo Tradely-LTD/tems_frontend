@@ -1,16 +1,7 @@
 import { useLocation, NavLink } from 'react-router-dom';
 import { useAppSelector } from '@/hooks/useAppSelector';
-
-const ROLE_HOME: Record<string, string> = {
-  NationalAdmin: '/dashboard/national',
-  StateAdmin: '/dashboard/state',
-  Agent: '/dashboard/agent',
-  Partner: '/dashboard/partner',
-  Auditor: '/dashboard/auditor',
-  JRB: '/dashboard/jrb',
-  CorporateAccount: '/dashboard/corporate',
-  Enforcement: '/dashboard/enforcement',
-};
+import { ROLE_ROUTES } from '@/config/roles';
+import type { RoleName } from '@/config/roles';
 
 const SEGMENT_LABELS: Record<string, string> = {
   waybills: 'Waybill Module',
@@ -19,13 +10,14 @@ const SEGMENT_LABELS: Record<string, string> = {
   partners: 'Partners Module',
   'enforcement-ops': 'Enforcement Module',
   settings: 'System Settings',
+  users: 'User Management',
 };
 
 export default function ModuleComingSoon() {
   const location = useLocation();
   const user = useAppSelector((s) => s.auth.user);
-  const roleName = user?.role_name ?? 'Agent';
-  const homeRoute = ROLE_HOME[roleName] ?? '/dashboard';
+  const roleName = user?.role_name ?? '';
+  const homeRoute = ROLE_ROUTES[roleName as RoleName] ?? '/dashboard';
 
   const segment = location.pathname.split('/').filter(Boolean).pop() ?? '';
   const moduleName = SEGMENT_LABELS[segment] ?? 'This Module';

@@ -10,6 +10,8 @@ import type {
   ForgotPasswordRequest,
   ResetPasswordRequest,
   RefreshRequest,
+  RegisterSubconcessionaireRequest,
+  RegisterSubconcessionaireResponse,
 } from './types';
 
 interface AuthState {
@@ -103,6 +105,9 @@ const authApi = emptyApi.injectEndpoints({
     resetPassword: builder.mutation<MessageResponse, ResetPasswordRequest>({
       query: (body) => ({ url: '/auth/reset-password', method: 'POST', body }),
     }),
+    registerSubconcessionaire: builder.mutation<RegisterSubconcessionaireResponse, RegisterSubconcessionaireRequest>({
+      query: (body) => ({ url: '/auth/register/subconcessionaire', method: 'POST', body }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -115,4 +120,5 @@ export const {
   useLogoutMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+  useRegisterSubconcessionaireMutation,
 } = authApi;

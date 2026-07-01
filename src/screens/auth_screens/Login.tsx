@@ -112,6 +112,11 @@ export default function Login() {
           Forgot password?
         </Link>
       </div>
+      <div className="mt-3 text-center">
+        <Link to={ROUTES.REGISTER_SUBCONCESSIONAIRE} className="text-[14px] text-royal-navy hover:underline">
+          Register as Subconcessionaire
+        </Link>
+      </div>
     </AuthCard>
   );
 }

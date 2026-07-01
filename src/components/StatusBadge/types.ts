@@ -6,7 +6,8 @@ export type BadgeVariant =
   | 'cancelled'
   | 'disputed'
   | 'processing'
-  | 'resolved';
+  | 'resolved'
+  | 'submitted';
 
 export interface StatusBadgeProps {
   variant: BadgeVariant;

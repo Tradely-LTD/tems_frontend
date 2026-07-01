@@ -204,7 +204,7 @@ export default function Step4Payment() {
             <tbody>
               {levyLines.map((line, i) => (
                 <tr key={i} className="border-b border-[#f4f3f9] last:border-0">
-                  <td className="py-1.5 text-[#1a1b20]">{line.name}</td>
+                  <td className="py-1.5 text-[#1a1b20]">{line.authority_name}</td>
                   <td className="py-1.5 text-right font-mono text-[#1a1b20]">
                     {formatNGN(line.amount)}
                   </td>

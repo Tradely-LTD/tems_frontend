@@ -155,7 +155,7 @@ export const NIGERIAN_STATES: State[] = [
     ],
   },
   {
-    name: 'FCT Abuja',
+    name: 'FCT',
     lgas: [
       { name: 'Abaji' }, { name: 'Bwari' }, { name: 'Gwagwalada' }, { name: 'Kuje' },
       { name: 'Kwali' }, { name: 'Municipal Area Council' },
@@ -405,6 +405,13 @@ export const NIGERIAN_STATES: State[] = [
     ],
   },
 ];
+
+export const NIGERIAN_STATE_NAMES: string[] = NIGERIAN_STATES.map((s) => s.name);
+
+export function getLgasForState(stateName: string | undefined | null): LGA[] {
+  if (!stateName) return [];
+  return NIGERIAN_STATES.find((s) => s.name === stateName)?.lgas ?? [];
+}
 
 export const NIGERIAN_COMMODITY_CODES: { code: string; label: string }[] = [
   { code: 'AGR-001', label: 'Grains & Cereals (Rice, Maize, Millet, Sorghum)' },

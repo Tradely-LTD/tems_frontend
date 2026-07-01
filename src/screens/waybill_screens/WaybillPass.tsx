@@ -1,22 +1,37 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import QRCode from 'react-qr-code';
+import { useReactToPrint } from 'react-to-print';
 import { Button } from '@/components/Buttons';
 import { useWaybillDetail } from './hooks/useWaybillDetail';
-import './WaybillPass.css';
+import WaybillReceipt, { PRINT_PRESETS, type PrintConfig } from './WaybillReceipt';
 
-type PageSize = 'a4' | 'a5';
+const DEFAULT_CONFIG = PRINT_PRESETS.find((p) => p.label === '80mm')!;
 
 export default function WaybillPass() {
   const navigate = useNavigate();
   const { waybillId } = useParams<{ waybillId: string }>();
   const { waybill, isLoading, error } = useWaybillDetail(waybillId ?? '');
-  const [pageSize, setPageSize] = useState<PageSize>('a5');
+
+  const [config, setConfig]         = useState<PrintConfig>(DEFAULT_CONFIG);
+  const [customMm, setCustomMm]     = useState('');
+  const [showCustom, setShowCustom] = useState(false);
+
+  const receiptRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    contentRef: receiptRef,
+    pageStyle: `
+      @page {
+        size: ${config.widthMm}mm ${config.widthMm >= 140 ? config.heightMm + 'mm' : 'auto'};
+        margin: ${config.marginMm}mm;
+      }
+      body { margin: 0; }
+    `,
+  });
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-[14px] text-[#444650]">Loading pass...</div>
+        <div className="text-[14px] text-[#444650]">Loading waybill...</div>
       </div>
     );
   }
@@ -30,141 +45,93 @@ export default function WaybillPass() {
     );
   }
 
-  const isPaid = waybill.payment_status === 'success';
+  function selectPreset(preset: PrintConfig) {
+    setConfig(preset);
+    setShowCustom(false);
+    setCustomMm('');
+  }
+
+  function applyCustom() {
+    const mm = parseFloat(customMm);
+    if (isNaN(mm) || mm < 40 || mm > 420) return;
+    const marginMm = mm < 70 ? 2 : mm < 100 ? 3 : mm < 160 ? 10 : 15;
+    const heightMm = mm < 100 ? 240 : mm < 160 ? 210 : 297;
+    setConfig({ label: `${mm}mm`, widthMm: mm, heightMm, marginMm });
+  }
 
   return (
-    <div className="min-h-screen bg-[#faf8ff] flex flex-col items-center py-8 px-4">
-      {/* Print controls */}
-      <div className="print-hidden flex items-center gap-3 mb-6 w-full max-w-md">
-        <Button label="Back" variant="ghost" onClick={() => navigate(-1)} />
-        <div className="flex-1" />
-        <button
-          onClick={() => setPageSize('a4')}
-          className={`h-8 px-3 text-[13px] font-medium rounded border transition-colors ${
-            pageSize === 'a4'
-              ? 'bg-[#002366] text-white border-[#002366]'
-              : 'border-[#c5c6d2] text-[#444650]'
-          }`}
-        >
-          A4
-        </button>
-        <button
-          onClick={() => setPageSize('a5')}
-          className={`h-8 px-3 text-[13px] font-medium rounded border transition-colors ${
-            pageSize === 'a5'
-              ? 'bg-[#002366] text-white border-[#002366]'
-              : 'border-[#c5c6d2] text-[#444650]'
-          }`}
-        >
-          A5
-        </button>
-        <Button
-          label="Print Pass"
-          variant="primary"
-          onClick={() => window.print()}
-        />
-      </div>
+    <div className="min-h-screen bg-[#f4f3f9] py-8 px-4">
 
-      {/* Pass card */}
-      <div
-        className={`waybill-pass-card bg-white shadow-md w-full ${
-          pageSize === 'a4' ? 'max-w-2xl size-a4' : 'max-w-sm size-a5'
-        }`}
-      >
-        {/* Navy header */}
-        <div className="bg-[#002366] px-6 py-4 flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-[#D4AF37] flex items-center justify-center shrink-0">
-            <span className="text-[#00113a] text-[13px] font-black leading-none">T</span>
-          </div>
-          <div>
-            <p className="text-white text-[15px] font-bold leading-none">TeMS</p>
-            <p className="text-[#758dd5] text-[11px] leading-tight mt-0.5">
-              National Trade Infrastructure
-            </p>
-          </div>
+      {/* ── Controls (hidden when printing) ── */}
+      <div className="print:hidden flex flex-col gap-3 mb-6 max-w-3xl mx-auto">
+
+        {/* Row 1 */}
+        <div className="flex items-center gap-3">
+          <Button label="Back" variant="ghost" onClick={() => navigate(-1)} />
           <div className="flex-1" />
-          <p className="text-[#D4AF37] text-[11px] font-bold tracking-wide uppercase">
-            Electronic Waybill
-          </p>
+          <Button label="Print" variant="primary" onClick={() => handlePrint()} />
         </div>
 
-        {/* QR area */}
-        <div className="flex flex-col items-center py-8 px-6 gap-4">
-          {waybill.qr_payload ? (
-            <div className="bg-white p-4" style={{ lineHeight: 0 }}>
-              <QRCode value={waybill.qr_payload} size={200} />
-            </div>
-          ) : (
-            <div className="w-[200px] h-[200px] bg-[#f4f3f9] flex items-center justify-center">
-              <span className="text-[12px] text-[#444650] text-center px-3">
-                QR code pending
-              </span>
+        {/* Row 2: paper size */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[11px] text-[#444650] font-semibold uppercase tracking-wide mr-1">
+            Paper:
+          </span>
+          {PRINT_PRESETS.map((preset) => (
+            <button
+              key={preset.label}
+              onClick={() => selectPreset(preset)}
+              className={`h-7 px-3 text-[12px] font-medium rounded border transition-colors ${
+                !showCustom && config.label === preset.label
+                  ? 'bg-[#002366] text-white border-[#002366]'
+                  : 'border-[#c5c6d2] text-[#444650] hover:border-[#002366]'
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+          <button
+            onClick={() => setShowCustom((v) => !v)}
+            className={`h-7 px-3 text-[12px] font-medium rounded border transition-colors ${
+              showCustom
+                ? 'bg-[#002366] text-white border-[#002366]'
+                : 'border-[#c5c6d2] text-[#444650] hover:border-[#002366]'
+            }`}
+          >
+            Custom
+          </button>
+          {showCustom && (
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min={40}
+                max={420}
+                placeholder="e.g. 72"
+                value={customMm}
+                onChange={(e) => setCustomMm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && applyCustom()}
+                className="h-7 w-20 px-2 text-[12px] border border-[#c5c6d2] rounded focus:outline-none focus:border-[#002366]"
+              />
+              <span className="text-[11px] text-[#444650]">mm</span>
+              <button
+                onClick={applyCustom}
+                className="h-7 px-2 text-[12px] font-medium text-white bg-[#002366] rounded"
+              >
+                Apply
+              </button>
             </div>
           )}
-
-          {/* Trust token */}
-          {isPaid ? (
-            <div className="bg-[#096c4b] text-white text-[13px] font-bold tracking-wider uppercase px-5 py-2 rounded-[8px]">
-              PAID IN FULL
-            </div>
-          ) : (
-            <div className="bg-[rgba(241,196,15,0.15)] text-[#0F172A] text-[13px] font-bold tracking-wider uppercase px-5 py-2 rounded-[8px]">
-              PAYMENT PENDING
-            </div>
-          )}
-        </div>
-
-        {/* Details */}
-        <div className="px-6 pb-8 border-t border-[#c5c6d2] pt-4">
-          <table className="w-full text-[13px]">
-            <tbody>
-              <tr className="border-b border-[#f4f3f9]">
-                <td className="py-2 text-[#444650] font-bold uppercase tracking-wide text-[11px] w-36">
-                  WB ID
-                </td>
-                <td className="py-2 font-mono text-[#1a1b20] font-semibold">
-                  {waybill.waybill_id}
-                </td>
-              </tr>
-              <tr className="border-b border-[#f4f3f9]">
-                <td className="py-2 text-[#444650] font-bold uppercase tracking-wide text-[11px]">
-                  Departure
-                </td>
-                <td className="py-2 text-[#1a1b20]">{waybill.departure_date}</td>
-              </tr>
-              <tr className="border-b border-[#f4f3f9]">
-                <td className="py-2 text-[#444650] font-bold uppercase tracking-wide text-[11px]">
-                  Route
-                </td>
-                <td className="py-2 text-[#1a1b20]">
-                  {waybill.origin_state} → {waybill.destination_state}
-                </td>
-              </tr>
-              <tr className="border-b border-[#f4f3f9]">
-                <td className="py-2 text-[#444650] font-bold uppercase tracking-wide text-[11px]">
-                  Commodity
-                </td>
-                <td className="py-2 font-mono text-[#1a1b20]">{waybill.commodity_code}</td>
-              </tr>
-              <tr>
-                <td className="py-2 text-[#444650] font-bold uppercase tracking-wide text-[11px]">
-                  Expires
-                </td>
-                <td className="py-2 text-[#1a1b20]">
-                  {new Date(waybill.expires_at).toLocaleDateString()}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer */}
-        <div className="bg-[#00113a] px-6 py-3">
-          <p className="text-[#758dd5] text-[10px] text-center">
-            This waybill is an official government document. Tampering is a criminal offence.
-          </p>
+          <span className="ml-auto text-[11px] text-[#444650]">
+            {config.widthMm} × {config.widthMm < 140 ? 'auto' : config.heightMm} mm
+          </span>
         </div>
       </div>
+
+      {/* ── Receipt preview ── */}
+      <div className="overflow-x-auto flex justify-center">
+        <WaybillReceipt ref={receiptRef} waybill={waybill} config={config} />
+      </div>
+
     </div>
   );
 }

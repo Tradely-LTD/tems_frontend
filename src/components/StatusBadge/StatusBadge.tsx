@@ -10,6 +10,7 @@ const DEFAULT_LABELS: Record<BadgeVariant, string> = {
   cancelled: 'CANCELLED',
   disputed: 'DISPUTED',
   resolved: 'RESOLVED',
+  submitted: 'SUBMITTED',
 };
 
 const VARIANT_STYLES: Record<BadgeVariant, string> = {
@@ -21,6 +22,7 @@ const VARIANT_STYLES: Record<BadgeVariant, string> = {
   cancelled: 'bg-[#c5c6d2] text-[#444650]',
   disputed: 'bg-[rgba(241,196,15,0.15)] text-[#0F172A]',
   resolved: 'bg-[#9ff4c9] text-[#002114]',
+  submitted: 'bg-[rgba(59,130,246,0.15)] text-[#1e40af]',
 };
 
 export function shipmentStatusToBadge(status: string): BadgeVariant {

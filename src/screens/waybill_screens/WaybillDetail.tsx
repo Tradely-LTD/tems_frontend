@@ -3,6 +3,7 @@ import QRCode from 'react-qr-code';
 import { Button } from '@/components/Buttons';
 import { StatusBadge, shipmentStatusToBadge } from '@/components/StatusBadge';
 import { useWaybillDetail } from './hooks/useWaybillDetail';
+import { useWaybillLevyLines } from './hooks/useWaybillLevyLines';
 import { buildWaybillPassRoute } from '@/constants/routes';
 
 function formatNGN(value: string | number): string {
@@ -37,6 +38,7 @@ export default function WaybillDetail() {
   const navigate = useNavigate();
   const { waybillId } = useParams<{ waybillId: string }>();
   const { waybill, isLoading, error, isExpired } = useWaybillDetail(waybillId ?? '');
+  const { levyLines, levyLinesLoading, levyLinesError } = useWaybillLevyLines(waybillId ?? '');
 
   if (isLoading) {
     return (
@@ -156,7 +158,7 @@ export default function WaybillDetail() {
                 <tbody>
                   {waybill.levy_breakdown.map((line, i) => (
                     <tr key={i} className="border-b border-[#f4f3f9] last:border-0">
-                      <td className="py-1.5 text-[#1a1b20]">{line.name}</td>
+                      <td className="py-1.5 text-[#1a1b20]">{line.authority_name}</td>
                       <td className="py-1.5 text-right font-mono text-[#1a1b20]">
                         {formatNGN(line.amount)}
                       </td>
@@ -172,6 +174,50 @@ export default function WaybillDetail() {
               </table>
             ) : (
               <p className="text-[14px] text-[#444650]">No levy data.</p>
+            )}
+          </div>
+
+          {/* Revenue Authority Disbursement (new per-authority breakdown) */}
+          <div className="bg-white border border-[#c5c6d2] rounded p-4">
+            <h2 className="text-[14px] font-bold text-[#002366] uppercase tracking-wide mb-3">
+              Revenue Authority Disbursement
+            </h2>
+            {levyLinesError && (
+              <p className="text-[14px] text-[#D83B01]">Failed to load disbursement breakdown.</p>
+            )}
+            {!levyLinesError && levyLinesLoading && (
+              <p className="text-[14px] text-[#444650]">Loading disbursement breakdown...</p>
+            )}
+            {!levyLinesError && !levyLinesLoading && levyLines.length === 0 && (
+              <p className="text-[14px] text-[#444650]">No disbursement lines recorded for this waybill.</p>
+            )}
+            {!levyLinesError && !levyLinesLoading && levyLines.length > 0 && (
+              <table className="w-full text-[14px]">
+                <thead>
+                  <tr className="border-b border-[#c5c6d2]">
+                    <th className="px-2 py-2 text-left text-[11px] font-bold tracking-[0.05em] uppercase text-[#444650]">
+                      Authority
+                    </th>
+                    <th className="px-2 py-2 text-right text-[11px] font-bold tracking-[0.05em] uppercase text-[#444650]">
+                      Amount
+                    </th>
+                    <th className="px-2 py-2 text-left text-[11px] font-bold tracking-[0.05em] uppercase text-[#444650]">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {levyLines.map((line) => (
+                    <tr key={line.id} className="border-b border-[#f4f3f9] last:border-0">
+                      <td className="py-1.5 text-[#1a1b20]">
+                        {line.authority_name} <span className="text-[#94a3b8]">({line.authority_code})</span>
+                      </td>
+                      <td className="py-1.5 text-right font-mono text-[#1a1b20]">{formatNGN(line.amount)}</td>
+                      <td className="py-1.5 text-[#444650] capitalize">{line.disb_status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
 

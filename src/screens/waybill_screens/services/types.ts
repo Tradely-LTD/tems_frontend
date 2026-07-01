@@ -12,7 +12,9 @@ export interface WaybillProduct {
 }
 
 export interface LevyLine {
-  name: string;
+  authority_name: string;
+  basis?: string;
+  rate?: number;
   amount: number;
 }
 
