@@ -58,6 +58,12 @@ import {
   RevenueDistributionConfig,
 } from '@/screens/superadmin_screens';
 import { IncidentReporting, AuditReport } from '@/screens/enforcement_screens';
+import {
+  ProfileScreen,
+  ChangePasswordScreen,
+  ChangeEmailScreen,
+  ProfileSettingsScreen,
+} from '@/screens/profile_screens';
 import { ROUTES } from '@/constants/routes';
 
 function AuditLogsDispatch() {
@@ -187,6 +193,11 @@ export const router = createBrowserRouter([
       { path: 'enforcement-ops/*', element: <ModuleComingSoon /> },
       { path: 'settings', element: <LevyConfigSettings /> },
       { path: 'settings/*', element: <ModuleComingSoon /> },
+      // Profile module
+      { path: 'profile', element: <ProfileScreen /> },
+      { path: 'profile/change-password', element: <ChangePasswordScreen /> },
+      { path: 'profile/change-email', element: <ChangeEmailScreen /> },
+      { path: 'profile/settings', element: <ProfileSettingsScreen /> },
       // Catch-all for any unregistered dashboard sub-path
       { path: '*', element: <ModuleComingSoon /> },
     ],

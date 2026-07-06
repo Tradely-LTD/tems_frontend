@@ -58,6 +58,12 @@ export const ROUTES = {
 
   // State Monitor (SuperAdmin multi-state view)
   STATE_MONITOR:       '/dashboard/state-monitor',
+
+  // Profile module
+  PROFILE:                    '/dashboard/profile',
+  PROFILE_CHANGE_PASSWORD:    '/dashboard/profile/change-password',
+  PROFILE_CHANGE_EMAIL:       '/dashboard/profile/change-email',
+  PROFILE_SETTINGS:           '/dashboard/profile/settings',
 } as const;
 
 export const buildWaybillDetailRoute = (id: string): string =>
