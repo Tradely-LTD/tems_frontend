@@ -18,6 +18,7 @@ export const ROUTES = {
   WAYBILLS_MANAGE: '/dashboard/waybills/manage',
   WAYBILL_DETAIL: '/dashboard/waybills/:waybillId',
   WAYBILL_PASS: '/dashboard/waybills/:waybillId/pass',
+  WAYBILL_VERIFY_PUBLIC: '/verify/:waybillId',
   IDENTITY: '/dashboard/identity',
   SETTINGS: '/dashboard/settings',
   IDENTITY_PROFILE: '/dashboard/identity/profile',

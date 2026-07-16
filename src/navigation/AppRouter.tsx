@@ -27,7 +27,7 @@ import SubConcessionaireAdminHome from '@/screens/dashboard_screens/SubConcessio
 import CorporateAccountHome from '@/screens/dashboard_screens/CorporateAccountHome';
 import AuditorHome from '@/screens/dashboard_screens/AuditorHome';
 import BuyerHome from '@/screens/dashboard_screens/BuyerHome';
-import { WaybillLedger, WaybillDetail, WaybillPass, WaybillManage, WaybillWizard } from '@/screens/waybill_screens';
+import { WaybillLedger, WaybillDetail, WaybillPass, WaybillManage, WaybillWizard, WaybillVerifyPublic } from '@/screens/waybill_screens';
 import { IdentityDashboard } from '@/screens/identity_screens';
 import { LevyConfigSettings } from '@/screens/config_screens';
 import {
@@ -128,6 +128,11 @@ export const router = createBrowserRouter([
   {
     path: '/unauthorized',
     element: <Unauthorized />,
+  },
+  // Waybill "scan to verify" — public, no auth, no login required
+  {
+    path: ROUTES.WAYBILL_VERIFY_PUBLIC,
+    element: <WaybillVerifyPublic />,
   },
   {
     path: ROUTES.DASHBOARD,

@@ -16,6 +16,7 @@ import type {
   LevyCalculateResponse,
   InitiatePaymentRequest,
   InitiatePaymentResponse,
+  WaybillPublicVerifyResponse,
 } from './types';
 
 const waybillApi = emptyApi.injectEndpoints({
@@ -57,6 +58,10 @@ const waybillApi = emptyApi.injectEndpoints({
     initiatePayment: builder.mutation<InitiatePaymentResponse, InitiatePaymentRequest>({
       query: (body) => ({ url: '/payments/initiate', method: 'POST', body }),
     }),
+    // Public — no auth. Backs the QR "scan to verify" page.
+    getPublicVerification: builder.query<WaybillPublicVerifyResponse, string>({
+      query: (id) => `/waybills/public/${id}/verify`,
+    }),
   }),
   overrideExisting: false,
 });
@@ -69,4 +74,5 @@ export const {
   useDisputeWaybillMutation,
   useCalculateLevyMutation,
   useInitiatePaymentMutation,
+  useGetPublicVerificationQuery,
 } = waybillApi;

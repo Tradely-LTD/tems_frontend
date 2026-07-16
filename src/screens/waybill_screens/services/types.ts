@@ -183,6 +183,22 @@ export interface InitiatePaymentResponse {
   };
 }
 
+export interface WaybillPublicVerification {
+  genuine: true;
+  waybill_id: string;
+  status: 'valid' | 'expired' | 'cancelled' | 'disputed';
+  origin_state: string;
+  destination_state: string;
+  commodity_code: string;
+  generated_at: string;
+  expires_at: string;
+}
+
+export interface WaybillPublicVerifyResponse {
+  success: boolean;
+  data: WaybillPublicVerification;
+}
+
 // Wizard form data held in React context
 export interface WizardStep1Data {
   shipper_tems_id: string;
