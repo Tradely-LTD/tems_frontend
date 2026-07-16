@@ -1,5 +1,5 @@
-import React from 'react';
-import QRCode from 'react-qr-code';
+import React, { useEffect, useState } from 'react';
+import QRCode from 'qrcode';
 import type { Waybill } from './services/types';
 
 // ─── Print config ─────────────────────────────────────────────────────────────
@@ -43,6 +43,24 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
 
   // Base font scaled to paper width
   const base = narrow ? 7 : 9;
+
+  // Rendered as a rasterised PNG (not inline SVG) because Bluetooth/USB thermal
+  // printer bridge apps (RawBT, PrinterShare, etc.) rasterise the page through a
+  // minimal WebView that frequently drops inline SVG but always handles <img>.
+  const qrSize = narrow ? 52 : 72;
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!waybill.qr_payload) {
+      setQrDataUrl(null);
+      return;
+    }
+    let cancelled = false;
+    QRCode.toDataURL(waybill.qr_payload, { margin: 0, width: qrSize * 4 })
+      .then((url) => { if (!cancelled) setQrDataUrl(url); })
+      .catch(() => { if (!cancelled) setQrDataUrl(null); });
+    return () => { cancelled = true; };
+  }, [waybill.qr_payload, qrSize]);
 
   // ── Shared inline style helpers ──────────────────────────────────────────────
 
@@ -178,9 +196,9 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
         </div>
 
         {/* QR code in header */}
-        {waybill.qr_payload ? (
+        {qrDataUrl ? (
           <div style={{ backgroundColor: '#fff', padding: '4px', borderRadius: '3px', flexShrink: 0 }}>
-            <QRCode value={waybill.qr_payload} size={narrow ? 52 : 72} />
+            <img src={qrDataUrl} width={qrSize} height={qrSize} alt="Waybill QR code" />
           </div>
         ) : null}
       </div>
@@ -306,19 +324,28 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
             </thead>
             <tbody>
               {products.map((p, i) => (
-                <tr key={p.id} style={{ backgroundColor: i % 2 ? '#fafafa' : '#fff' }}>
-                  <td style={td('center')}>{i + 1}</td>
-                  <td style={{ ...td(), fontFamily: 'Courier New, monospace' }}>{p.commodity_code}</td>
-                  {!narrow && <td style={td()}>{p.description}</td>}
-                  <td style={td('right')}>{p.quantity}</td>
-                  <td style={td()}>{p.unit}</td>
-                  <td style={td('right')}>{Number(p.weight_kg).toLocaleString()}</td>
-                  {!narrow && (
-                    <td style={{ ...td('right'), borderRight: 'none' }}>
-                      {Number(p.declared_total_value).toLocaleString()}
-                    </td>
+                <React.Fragment key={p.id}>
+                  <tr style={{ backgroundColor: i % 2 ? '#fafafa' : '#fff' }}>
+                    <td style={{ ...td('center'), borderBottom: narrow && p.description ? 'none' : undefined }}>{i + 1}</td>
+                    <td style={{ ...td(), fontFamily: 'Courier New, monospace', borderBottom: narrow && p.description ? 'none' : undefined }}>{p.commodity_code}</td>
+                    {!narrow && <td style={td()}>{p.description}</td>}
+                    <td style={{ ...td('right'), borderBottom: narrow && p.description ? 'none' : undefined }}>{p.quantity}</td>
+                    <td style={{ ...td(), borderBottom: narrow && p.description ? 'none' : undefined }}>{p.unit}</td>
+                    <td style={{ ...td('right'), borderRight: narrow ? 'none' : undefined, borderBottom: narrow && p.description ? 'none' : undefined }}>{Number(p.weight_kg).toLocaleString()}</td>
+                    {!narrow && (
+                      <td style={{ ...td('right'), borderRight: 'none' }}>
+                        {Number(p.declared_total_value).toLocaleString()}
+                      </td>
+                    )}
+                  </tr>
+                  {narrow && p.description && (
+                    <tr style={{ backgroundColor: i % 2 ? '#fafafa' : '#fff' }}>
+                      <td colSpan={5} style={{ ...td(), borderTop: 'none', color: GREY, fontStyle: 'italic', paddingTop: 0 }}>
+                        {p.description}
+                      </td>
+                    </tr>
                   )}
-                </tr>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
