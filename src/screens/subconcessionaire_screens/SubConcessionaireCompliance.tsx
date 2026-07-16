@@ -95,6 +95,7 @@ export default function SubConcessionaireCompliance() {
         {isLoading && <div className="px-5 py-10 text-center text-[#94a3b8] text-[13px]">Loading agents…</div>}
         {isError  && <div className="px-5 py-10 text-center text-[#dc2626] text-[13px]">Failed to load agents.</div>}
         {!isLoading && !isError && (
+          <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
               <tr>
@@ -141,6 +142,7 @@ export default function SubConcessionaireCompliance() {
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

@@ -87,7 +87,7 @@ export default function ComplianceHub() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#f1f3f9] p-1 rounded-lg w-fit">
+      <div className="flex gap-1 bg-[#f1f3f9] p-1 rounded-lg max-w-full overflow-x-auto">
         {tabs.map((t) => (
           <button
             key={t.key}
@@ -143,6 +143,7 @@ export default function ComplianceHub() {
               Open Identity Portal →
             </button>
           </div>
+          <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
               <tr>
@@ -178,6 +179,7 @@ export default function ComplianceHub() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -186,6 +188,7 @@ export default function ComplianceHub() {
           {orgsLoading ? (
             <div className="px-5 py-10 text-center text-[#94a3b8] text-[13px]">Loading organisations…</div>
           ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
                 <tr>
@@ -222,6 +225,7 @@ export default function ComplianceHub() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       )}
@@ -234,6 +238,7 @@ export default function ComplianceHub() {
           {agentsLoading ? (
             <div className="px-5 py-10 text-center text-[#94a3b8] text-[13px]">Loading agents…</div>
           ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
                 <tr>
@@ -274,6 +279,7 @@ export default function ComplianceHub() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       )}

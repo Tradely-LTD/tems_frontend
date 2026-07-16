@@ -86,6 +86,7 @@ export default function AgentHome() {
           {wbLoading ? (
             <div className="py-10 text-center text-[#94a3b8] text-[13px]">Loading…</div>
           ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-[12px]">
               <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
                 <tr>
@@ -117,6 +118,7 @@ export default function AgentHome() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
 

@@ -131,7 +131,7 @@ export default function SubConcessionaireSupport() {
       </div>
 
       {/* Contact strip */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { icon: '📞', label: 'Phone Support', value: '+234 800 TEMS 001', note: 'Mon–Fri, 8 AM – 6 PM' },
           { icon: '✉️', label: 'Email',          value: 'support@tems.gov.ng', note: 'Response within 24h' },

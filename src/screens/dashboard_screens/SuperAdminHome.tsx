@@ -172,6 +172,7 @@ export default function SuperAdminHome() {
             View lifecycle →
           </button>
         </div>
+        <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
             <tr className="border-b border-[#e2e4ed]">
@@ -202,6 +203,7 @@ export default function SuperAdminHome() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
     </div>

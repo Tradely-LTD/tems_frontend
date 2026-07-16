@@ -142,7 +142,7 @@ export default function SubConcDetail() {
             ))}
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: 'Total Agents',    value: agents.length,          color: '#002366', bg: '#e8edf7' },
             { label: 'Active Agents',   value: activeAgents.length,   color: '#096c4b', bg: '#e6f4ef' },
@@ -224,6 +224,7 @@ export default function SubConcDetail() {
         {agentsLoading ? (
           <div className="py-10 text-center text-[#94a3b8] text-[13px]">Loading agents…</div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-[12px]">
             <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
               <tr>
@@ -271,6 +272,7 @@ export default function SubConcDetail() {
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

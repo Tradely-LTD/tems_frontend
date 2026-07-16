@@ -345,8 +345,8 @@ export default function UserAccessManagement() {
       </div>
 
       {/* ── Tabs ── */}
-      <div className="border-b border-[#e2e4ed]">
-        <div className="flex gap-0">
+      <div className="border-b border-[#e2e4ed] overflow-x-auto">
+        <div className="flex gap-0 w-fit min-w-full">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -421,6 +421,7 @@ export default function UserAccessManagement() {
             ) : filtered.length === 0 ? (
               <div className="p-8 text-center text-[13px] text-[#94a3b8]">No users match the current filters.</div>
             ) : (
+              <div className="overflow-x-auto">
               <table className="w-full text-[12px]">
                 <thead>
                   <tr className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
@@ -505,6 +506,7 @@ export default function UserAccessManagement() {
                   })}
                 </tbody>
               </table>
+              </div>
             )}
 
             {/* Pagination */}
@@ -591,7 +593,7 @@ export default function UserAccessManagement() {
       {/* ── Create User Modal ── */}
       {showCreate && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[520px] overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e4ed]">
               <div>
                 <h2 className="text-[16px] font-bold text-[#1a1b20]">Create Platform User</h2>
@@ -605,7 +607,7 @@ export default function UserAccessManagement() {
                   {formErr}
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">Full Name</label>
                   <input value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
@@ -628,7 +630,7 @@ export default function UserAccessManagement() {
                   placeholder="e.g. Kano State Government"
                   className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#002366]/30" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">Email</label>
                   <input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}

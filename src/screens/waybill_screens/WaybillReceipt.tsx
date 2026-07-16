@@ -291,6 +291,7 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
         <div style={sectionHead()}>Commodity</div>
 
         {products.length > 0 ? (
+          <div className="overflow-x-auto">
           <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
             <thead>
               <tr>
@@ -321,6 +322,7 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <div style={row}>
             <span style={lbl}>Commodity Code</span>

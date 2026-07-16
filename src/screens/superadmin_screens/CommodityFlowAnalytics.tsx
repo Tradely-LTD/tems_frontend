@@ -211,7 +211,7 @@ export default function CommodityFlowAnalytics() {
       </div>
 
       {/* KPI strip */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { label: 'Total Waybills',      value: totalWaybills.toLocaleString(),                    color: '#002366', bg: '#e8edf7' },
           { label: 'Total Weight (kg)',   value: totalWeight.toLocaleString(undefined, { maximumFractionDigits: 0 }), color: '#096c4b', bg: '#e6f4ef' },
@@ -237,6 +237,7 @@ export default function CommodityFlowAnalytics() {
           <div className="py-12 text-center text-[#dc2626] text-[13px]">Failed to load commodity flow data.</div>
         )}
         {!isLoading && !isError && (
+          <div className="overflow-x-auto">
           <table className="w-full text-[12px]">
             <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
               <tr>
@@ -281,6 +282,7 @@ export default function CommodityFlowAnalytics() {
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

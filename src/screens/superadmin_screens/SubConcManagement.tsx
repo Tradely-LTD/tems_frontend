@@ -116,7 +116,7 @@ export default function SubConcManagement() {
       </div>
 
       {/* KPI strip */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { label: 'Total',    value: counts.total,    color: '#002366', bg: '#e8edf7' },
           { label: 'Active',   value: counts.active,   color: '#096c4b', bg: '#e6f4ef' },
@@ -156,6 +156,7 @@ export default function SubConcManagement() {
         {isLoading && <div className="py-12 text-center text-[#94a3b8] text-[13px]">Loading…</div>}
         {isError   && <div className="py-12 text-center text-[#dc2626] text-[13px]">Failed to load organisations.</div>}
         {!isLoading && !isError && (
+          <div className="overflow-x-auto">
           <table className="w-full text-[12px]">
             <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
               <tr>
@@ -227,6 +228,7 @@ export default function SubConcManagement() {
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

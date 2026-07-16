@@ -94,7 +94,7 @@ export default function OnboardStakeholderSlideOver({ open, onClose, onCreated }
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">
                     Tier *

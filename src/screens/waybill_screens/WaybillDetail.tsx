@@ -154,6 +154,7 @@ export default function WaybillDetail() {
               Levy Breakdown
             </h2>
             {waybill.levy_breakdown?.length > 0 ? (
+              <div className="overflow-x-auto">
               <table className="w-full text-[14px]">
                 <tbody>
                   {waybill.levy_breakdown.map((line, i) => (
@@ -172,6 +173,7 @@ export default function WaybillDetail() {
                   </tr>
                 </tbody>
               </table>
+              </div>
             ) : (
               <p className="text-[14px] text-[#444650]">No levy data.</p>
             )}
@@ -192,6 +194,7 @@ export default function WaybillDetail() {
               <p className="text-[14px] text-[#444650]">No disbursement lines recorded for this waybill.</p>
             )}
             {!levyLinesError && !levyLinesLoading && levyLines.length > 0 && (
+              <div className="overflow-x-auto">
               <table className="w-full text-[14px]">
                 <thead>
                   <tr className="border-b border-[#c5c6d2]">
@@ -218,6 +221,7 @@ export default function WaybillDetail() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
 
@@ -228,6 +232,7 @@ export default function WaybillDetail() {
                 Products
               </h2>
               <div className="overflow-x-auto">
+                <div className="overflow-x-auto">
                 <table className="w-full text-[13px]">
                   <thead>
                     <tr className="border-b border-[#c5c6d2]">
@@ -265,6 +270,7 @@ export default function WaybillDetail() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           )}

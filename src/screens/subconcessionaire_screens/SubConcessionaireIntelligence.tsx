@@ -52,7 +52,7 @@ export default function SubConcessionaireIntelligence() {
         <p className="text-[13px] text-[#64748b] mt-0.5">Trade analytics and operational insights</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { label: 'Waybills This Month', value: totalWaybills.toLocaleString(), note: 'Current month' },
           { label: 'Revenue This Month',  value: formatRevenue(totalRevenue),     note: 'Levy collections' },
@@ -113,6 +113,7 @@ export default function SubConcessionaireIntelligence() {
 
       <div className="bg-white rounded-xl border border-[#e2e4ed] p-6">
         <p className="text-[14px] font-semibold text-[#1a1b20] mb-4">Top Trade Corridors</p>
+        <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
             <tr className="border-b border-[#e2e4ed]">
@@ -139,6 +140,7 @@ export default function SubConcessionaireIntelligence() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
     </div>

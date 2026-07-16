@@ -107,6 +107,7 @@ export default function SubConcessionaireAuditLogs() {
           <div className="px-5 py-10 text-center text-[#dc2626] text-[13px]">Failed to load audit logs.</div>
         )}
         {!isLoading && !isError && (
+          <div className="overflow-x-auto">
           <table className="w-full text-[12px]">
             <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
               <tr>
@@ -148,6 +149,7 @@ export default function SubConcessionaireAuditLogs() {
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

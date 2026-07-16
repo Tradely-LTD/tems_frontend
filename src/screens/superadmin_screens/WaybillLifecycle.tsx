@@ -68,7 +68,7 @@ export default function WaybillLifecycle() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#f1f3f9] p-1 rounded-lg w-fit">
+      <div className="flex gap-1 bg-[#f1f3f9] p-1 rounded-lg max-w-full overflow-x-auto">
         {(['lifecycle', 'settlement', 'disputes'] as const).map((tab) => (
           <button
             key={tab}
@@ -144,6 +144,7 @@ export default function WaybillLifecycle() {
             {settLoading ? (
               <div className="px-5 py-10 text-center text-[#94a3b8] text-[13px]">Loading settlements…</div>
             ) : (
+              <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
                   <tr>
@@ -180,6 +181,7 @@ export default function WaybillLifecycle() {
                   )}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>
@@ -190,6 +192,7 @@ export default function WaybillLifecycle() {
           <div className="px-6 py-4 border-b border-[#e2e4ed]">
             <p className="text-[14px] font-semibold text-[#1a1b20]">Active Disputes</p>
           </div>
+          <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
               <tr>
@@ -226,6 +229,7 @@ export default function WaybillLifecycle() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

@@ -84,7 +84,7 @@ export default function RevenueDistributionConfig() {
         )}
       </div>
 
-      <div className="flex gap-1 border-b border-[#e2e4ed]">
+      <div className="flex gap-1 border-b border-[#e2e4ed] overflow-x-auto">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -119,6 +119,7 @@ export default function RevenueDistributionConfig() {
             <div className="px-6 py-8 text-center text-[13px] text-[#64748b]">No revenue authorities yet.</div>
           )}
           {!authoritiesError && !authoritiesFetching && authorities.length > 0 && (
+            <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
                 <tr>
@@ -179,6 +180,7 @@ export default function RevenueDistributionConfig() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       )}
@@ -225,6 +227,7 @@ export default function RevenueDistributionConfig() {
               <div className="px-6 py-8 text-center text-[13px] text-[#64748b]">No revenue rules yet.</div>
             )}
             {!rulesError && !rulesFetching && rules.length > 0 && (
+              <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
                   <tr>
@@ -280,6 +283,7 @@ export default function RevenueDistributionConfig() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>

@@ -200,6 +200,7 @@ export default function Step4Payment() {
         ) : levyError ? (
           <p className="text-[13px] text-[#D83B01]">{levyError}</p>
         ) : levyLines.length > 0 ? (
+          <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
             <tbody>
               {levyLines.map((line, i) => (
@@ -212,6 +213,7 @@ export default function Step4Payment() {
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <p className="text-[13px] text-[#444650]">No levy breakdown available.</p>
         )}
