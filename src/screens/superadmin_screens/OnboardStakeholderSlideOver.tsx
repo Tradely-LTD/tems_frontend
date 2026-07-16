@@ -1,6 +1,7 @@
 import { useOnboardStakeholder } from './hooks/useOnboardStakeholder';
 import { AUTHORITY_TIERS, STAKEHOLDER_TYPES, SETTLEMENT_TYPES } from './schema/revenueAuthorityValidationSchema';
 import type { RevenueAuthority } from './services/types';
+import { NIGERIAN_STATE_NAMES, getLgasForState } from '@/constants/nigeria';
 
 interface OnboardStakeholderSlideOverProps {
   open: boolean;
@@ -149,23 +150,35 @@ export default function OnboardStakeholderSlideOver({ open, onClose, onCreated }
                   <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">
                     State
                   </label>
-                  <input
+                  <select
                     value={form.state}
-                    onChange={(e) => updateField('state', e.target.value)}
-                    placeholder="e.g. Kano"
-                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#435b9f]"
-                  />
+                    onChange={(e) => {
+                      updateField('state', e.target.value);
+                      updateField('lga', '');
+                    }}
+                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] bg-white focus:outline-none focus:ring-2 focus:ring-[#435b9f]"
+                  >
+                    <option value="">Select state…</option>
+                    {NIGERIAN_STATE_NAMES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">
                     LGA
                   </label>
-                  <input
+                  <select
                     value={form.lga}
                     onChange={(e) => updateField('lga', e.target.value)}
-                    placeholder="e.g. Dawakin Tofa"
-                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#435b9f]"
-                  />
+                    disabled={!form.state}
+                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] bg-white focus:outline-none focus:ring-2 focus:ring-[#435b9f] disabled:bg-[#f4f3f9] disabled:cursor-not-allowed"
+                  >
+                    <option value="">{form.state ? 'Select LGA…' : 'Select a state first'}</option>
+                    {getLgasForState(form.state).map((l) => (
+                      <option key={l.name} value={l.name}>{l.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

@@ -3,6 +3,7 @@ import OnboardStakeholderSlideOver from './OnboardStakeholderSlideOver';
 import EditRevenueRuleModal from './EditRevenueRuleModal';
 import { RULE_SCOPES, RULE_STATUSES } from './schema/revenueRuleValidationSchema';
 import { formatNGN, formatRate } from './utils/revenueFormatters';
+import { NIGERIAN_STATE_NAMES, getLgasForState } from '@/constants/nigeria';
 
 const TABS: { key: 'authorities' | 'rules' | 'preview'; label: string }[] = [
   { key: 'authorities', label: 'Revenue Authorities' },
@@ -310,12 +311,19 @@ export default function RevenueDistributionConfig() {
                 <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">
                   State *
                 </label>
-                <input
+                <select
                   value={previewForm.state_name}
-                  onChange={(e) => updatePreviewField('state_name', e.target.value)}
-                  placeholder="e.g. Kano"
-                  className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#435b9f]"
-                />
+                  onChange={(e) => {
+                    updatePreviewField('state_name', e.target.value);
+                    updatePreviewField('lga_name', '');
+                  }}
+                  className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] bg-white focus:outline-none focus:ring-2 focus:ring-[#435b9f]"
+                >
+                  <option value="">Select state…</option>
+                  {NIGERIAN_STATE_NAMES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
                 {previewErrors.state_name && (
                   <p className="text-[11px] text-[#dc2626] mt-1">{previewErrors.state_name}</p>
                 )}
@@ -324,12 +332,17 @@ export default function RevenueDistributionConfig() {
                 <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">
                   LGA
                 </label>
-                <input
+                <select
                   value={previewForm.lga_name}
                   onChange={(e) => updatePreviewField('lga_name', e.target.value)}
-                  placeholder="e.g. Dawakin Tofa"
-                  className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#435b9f]"
-                />
+                  disabled={!previewForm.state_name}
+                  className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] bg-white focus:outline-none focus:ring-2 focus:ring-[#435b9f] disabled:bg-[#f4f3f9] disabled:cursor-not-allowed"
+                >
+                  <option value="">{previewForm.state_name ? 'Select LGA…' : 'Select a state first'}</option>
+                  {getLgasForState(previewForm.state_name).map((l) => (
+                    <option key={l.name} value={l.name}>{l.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div>

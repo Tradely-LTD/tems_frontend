@@ -68,7 +68,8 @@ import { ROUTES } from '@/constants/routes';
 
 function AuditLogsDispatch() {
   const role = useAppSelector((s) => s.auth.user?.role_name);
-  if (role === 'SuperAdmin' || role === 'NationalAdmin') {
+  const FULL_AUDIT_ROLES = ['SuperAdmin', 'NationalAdmin', 'StateAdmin', 'LGAAdmin', 'JRBAccount', 'FederalGovtAccount', 'Auditor'];
+  if (role && FULL_AUDIT_ROLES.includes(role)) {
     return <SuperAdminAuditLogs />;
   }
   return <SubConcessionaireAuditLogs />;

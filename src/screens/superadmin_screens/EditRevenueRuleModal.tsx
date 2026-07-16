@@ -1,6 +1,7 @@
 import { useEditRevenueRule } from './hooks/useEditRevenueRule';
 import { RULE_SCOPES, RULE_BASES, RULE_STATUSES } from './schema/revenueRuleValidationSchema';
 import type { RevenueAuthority, RevenueRule } from './services/types';
+import { NIGERIAN_STATE_NAMES, getLgasForState } from '@/constants/nigeria';
 
 interface EditRevenueRuleModalProps {
   open: boolean;
@@ -120,15 +121,22 @@ export default function EditRevenueRuleModal({
               {showStateField && (
                 <div>
                   <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">
-                    State {showStateField && '*'}
+                    State *
                   </label>
-                  <input
+                  <select
                     value={form.state_name}
-                    onChange={(e) => updateField('state_name', e.target.value)}
+                    onChange={(e) => {
+                      updateField('state_name', e.target.value);
+                      updateField('lga_name', '');
+                    }}
                     disabled={isEditMode}
-                    placeholder="e.g. Kano"
-                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#435b9f] disabled:bg-[#f4f3f9] disabled:cursor-not-allowed"
-                  />
+                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] bg-white focus:outline-none focus:ring-2 focus:ring-[#435b9f] disabled:bg-[#f4f3f9] disabled:cursor-not-allowed"
+                  >
+                    <option value="">Select state…</option>
+                    {NIGERIAN_STATE_NAMES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
                   {errors.state_name && <p className="text-[11px] text-[#dc2626] mt-1">{errors.state_name}</p>}
                 </div>
               )}
@@ -137,13 +145,17 @@ export default function EditRevenueRuleModal({
                   <label className="block text-[11px] font-semibold text-[#64748b] uppercase tracking-wide mb-1">
                     LGA *
                   </label>
-                  <input
+                  <select
                     value={form.lga_name}
                     onChange={(e) => updateField('lga_name', e.target.value)}
-                    disabled={isEditMode}
-                    placeholder="e.g. Dawakin Tofa"
-                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#435b9f] disabled:bg-[#f4f3f9] disabled:cursor-not-allowed"
-                  />
+                    disabled={isEditMode || !form.state_name}
+                    className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] bg-white focus:outline-none focus:ring-2 focus:ring-[#435b9f] disabled:bg-[#f4f3f9] disabled:cursor-not-allowed"
+                  >
+                    <option value="">{form.state_name ? 'Select LGA…' : 'Select a state first'}</option>
+                    {getLgasForState(form.state_name).map((l) => (
+                      <option key={l.name} value={l.name}>{l.name}</option>
+                    ))}
+                  </select>
                   {errors.lga_name && <p className="text-[11px] text-[#dc2626] mt-1">{errors.lga_name}</p>}
                 </div>
               )}
