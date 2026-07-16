@@ -366,11 +366,11 @@ export default function DashboardLayout() {
     : '?';
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#faf8ff]">
+    <div className="flex h-screen overflow-hidden bg-[#faf8ff] print:h-auto print:overflow-visible print:block">
       {/* Mobile backdrop — closes sidebar when tapped outside */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 md:hidden print:hidden"
           onClick={toggleSidebar}
           aria-hidden="true"
         />
@@ -387,6 +387,8 @@ export default function DashboardLayout() {
           // Desktop: static in flow, collapse via width
           'md:relative md:z-auto md:translate-x-0',
           sidebarOpen ? 'md:w-60' : 'md:w-0 md:overflow-hidden',
+          // Never print the nav shell — only page content should print
+          'print:hidden',
         ].join(' ')}
       >
         {/* Logo zone */}
@@ -431,9 +433,9 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Right panel */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0 print:overflow-visible">
         {/* Top bar */}
-        <header className="h-16 shrink-0 bg-white border-b border-[#c5c6d2] flex items-center justify-between px-4 md:px-8">
+        <header className="h-16 shrink-0 bg-white border-b border-[#c5c6d2] flex items-center justify-between px-4 md:px-8 print:hidden">
           <div className="flex items-center gap-3">
             {/* Sidebar toggle — visible on all screen sizes */}
             <button
@@ -480,7 +482,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 print:overflow-visible print:p-0">
           <Outlet />
         </main>
       </div>
