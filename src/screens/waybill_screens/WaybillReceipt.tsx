@@ -47,7 +47,9 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
   // Rendered as a rasterised PNG (not inline SVG) because Bluetooth/USB thermal
   // printer bridge apps (RawBT, PrinterShare, etc.) rasterise the page through a
   // minimal WebView that frequently drops inline SVG but always handles <img>.
-  const qrSize = narrow ? 52 : 72;
+  // Sized ~25mm physical (at the print-standard 96 CSS px/inch) — printed QR
+  // codes smaller than ~20mm are unreliable to scan, more so on thermal print.
+  const qrSize = narrow ? 96 : 100;
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
