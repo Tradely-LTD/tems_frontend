@@ -29,7 +29,7 @@ import AuditorHome from '@/screens/dashboard_screens/AuditorHome';
 import BuyerHome from '@/screens/dashboard_screens/BuyerHome';
 import { WaybillLedger, WaybillDetail, WaybillPass, WaybillManage, WaybillWizard, WaybillVerifyPublic } from '@/screens/waybill_screens';
 import { IdentityDashboard } from '@/screens/identity_screens';
-import { LevyConfigSettings } from '@/screens/config_screens';
+import { SettingsScreen } from '@/screens/config_screens';
 import {
   AgentListScreen,
   AgentOnboardingForm,
@@ -197,7 +197,7 @@ export const router = createBrowserRouter([
       { path: 'partners/*', element: <ModuleComingSoon /> },
       { path: 'enforcement-ops', element: <ModuleComingSoon /> },
       { path: 'enforcement-ops/*', element: <ModuleComingSoon /> },
-      { path: 'settings', element: <LevyConfigSettings /> },
+      { path: 'settings', element: <SettingsScreen /> },
       { path: 'settings/*', element: <ModuleComingSoon /> },
       // Profile module
       { path: 'profile', element: <ProfileScreen /> },
