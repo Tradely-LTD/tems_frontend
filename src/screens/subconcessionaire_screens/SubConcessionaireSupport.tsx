@@ -117,14 +117,14 @@ export default function SubConcessionaireSupport() {
   return (
     <div className="max-w-[1100px] mx-auto space-y-6">
 
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <h1 className="text-[22px] font-bold text-[#1a1b20]">Support Centre</h1>
           <p className="text-[13px] text-[#64748b] mt-0.5">Submit tickets, track responses, and browse common questions</p>
         </div>
         <button
           onClick={() => { setShowForm(!showForm); setSelectedId(null); }}
-          className="bg-[#002366] text-white text-[13px] font-semibold px-4 py-2 rounded-lg hover:bg-[#001a4d]"
+          className="bg-[#002366] text-white text-[13px] font-semibold px-4 py-2 rounded-lg hover:bg-[#001a4d] self-start"
         >
           + New Ticket
         </button>
@@ -153,8 +153,8 @@ export default function SubConcessionaireSupport() {
         <div className="bg-white rounded-xl border border-[#e2e4ed] p-6">
           <p className="text-[15px] font-semibold text-[#1a1b20] mb-4">New Support Ticket</p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
                 <label className="block text-[12px] font-medium text-[#1a1b20] mb-1">Subject *</label>
                 <input required value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}
                   placeholder="Brief description of the issue"
@@ -182,7 +182,7 @@ export default function SubConcessionaireSupport() {
                   <option value="urgent">Urgent</option>
                 </select>
               </div>
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <label className="block text-[12px] font-medium text-[#1a1b20] mb-1">Description *</label>
                 <textarea required rows={4} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
                   placeholder="Describe the issue in detail, include any reference numbers…"

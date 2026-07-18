@@ -127,7 +127,7 @@ function TicketThread({ ticketId, onClose }: { ticketId: string; onClose: () => 
               placeholder="Type your reply…"
               className="w-full border border-[#c5c6d2] rounded-lg px-3 py-2 text-[13px] resize-none focus:outline-none focus:ring-2 focus:ring-[#435b9f]"
             />
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <label className="flex items-center gap-2 text-[12px] text-[#64748b] cursor-pointer">
                 <input type="checkbox" checked={isInternal} onChange={(e) => setIsInternal(e.target.checked)} className="rounded" />
                 Internal note (not visible to sub-conc)
@@ -162,10 +162,10 @@ export default function SuperAdminSupportInbox() {
         <p className="text-[13px] text-[#64748b] mt-0.5">Review and respond to support tickets from sub-concessionaires</p>
       </div>
 
-      <div className="flex gap-6 h-[calc(100vh-220px)] min-h-[500px]">
+      <div className="flex flex-col md:flex-row gap-6 md:h-[calc(100vh-220px)] md:min-h-[500px]">
 
         {/* Ticket list */}
-        <div className="w-80 shrink-0 flex flex-col bg-white rounded-xl border border-[#e2e4ed] overflow-hidden">
+        <div className="w-full md:w-80 md:shrink-0 flex flex-col bg-white rounded-xl border border-[#e2e4ed] overflow-hidden h-[360px] md:h-auto">
           {/* Filter tabs */}
           <div className="flex border-b border-[#e2e4ed] p-1 gap-1">
             {['open', 'in_progress', 'resolved', 'all'].map((f) => (
@@ -214,7 +214,7 @@ export default function SuperAdminSupportInbox() {
         </div>
 
         {/* Thread pane */}
-        <div className="flex-1 bg-white rounded-xl border border-[#e2e4ed] overflow-hidden flex flex-col">
+        <div className="flex-1 bg-white rounded-xl border border-[#e2e4ed] overflow-hidden flex flex-col h-[500px] md:h-auto">
           {selectedId ? (
             <TicketThread ticketId={selectedId} onClose={() => setSelectedId(null)} />
           ) : (

@@ -76,7 +76,7 @@ export default function CommodityCodesSettings() {
           <h2 className="text-[16px] font-bold text-[#002366] uppercase tracking-wide mb-4">New Commodity</h2>
 
           <form onSubmit={onCreateSubmit} noValidate>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label htmlFor="code" className="text-[13px] font-semibold text-[#444650] block mb-1">
                   Code
@@ -179,7 +179,7 @@ export default function CommodityCodesSettings() {
         </div>
       )}
 
-      <div className="bg-white border border-[#c5c6d2] rounded overflow-hidden">
+      <div className="bg-white border border-[#c5c6d2] rounded overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-[#c5c6d2]">
@@ -239,7 +239,7 @@ export default function CommodityCodesSettings() {
                   <tr className="border-b border-[#c5c6d2] last:border-b-0">
                     <td colSpan={6} className="px-4 py-4 bg-[#f8f8fa]">
                       <form onSubmit={onUpdateSubmit} noValidate>
-                        <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                           <div>
                             <label htmlFor="edit-name" className="text-[13px] font-semibold text-[#444650] block mb-1">
                               Name
