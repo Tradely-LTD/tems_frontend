@@ -1,7 +1,7 @@
 /**
  * Acceptance Tests — KYC Admin Review frontend module
  *
- * AC-1   NationalAdmin/SuperAdmin see the review queue, not the personal form
+ * AC-1   The review queue renders its own heading/filter, distinct from the personal form
  * AC-2   Queue rows show: full name, email, document type (or "—"), submitted date
  * AC-3   Pagination renders only when total > 20
  * AC-4   Status filter changes what table shows; filter change resets page to 1
@@ -196,6 +196,7 @@ function makeStore(role_name = 'NationalAdmin') {
 
 import IdentityDashboard from '../IdentityDashboard';
 import KycReviewModal from '../KycReviewModal';
+import KycReviewQueue from '../KycReviewQueue';
 
 function renderDashboard(role_name = 'NationalAdmin') {
   const store = makeStore(role_name);
@@ -203,6 +204,23 @@ function renderDashboard(role_name = 'NationalAdmin') {
     <Provider store={store}>
       <MemoryRouter>
         <IdentityDashboard />
+      </MemoryRouter>
+    </Provider>
+  );
+}
+
+// KycReviewQueue now lives standalone inside IAM Hub's KYC Review tab rather
+// than being rendered inline by IdentityDashboard for admin roles — admins
+// hitting IdentityDashboard are redirected there instead (see AC-6, and
+// IdentityDashboard's own isAdminRole branch). Role-gating for who can reach
+// this component happens at the route/nav layer, not inside the component
+// itself, so no role_name is needed here.
+function renderQueue() {
+  const store = makeStore('NationalAdmin');
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <KycReviewQueue />
       </MemoryRouter>
     </Provider>
   );
@@ -231,34 +249,29 @@ beforeEach(() => {
 });
 
 // =============================================================================
-// AC-1: NationalAdmin / SuperAdmin see the review queue, not personal form
+// AC-1: The review queue (reached via IAM Hub for admin roles) renders its
+// own heading/filter, distinct from the personal KYC form. Admins no longer
+// reach this inline through IdentityDashboard — IdentityDashboard redirects
+// them to IAM Hub instead (see AC-6) — so this now exercises KycReviewQueue
+// directly, the way it's actually rendered in production.
 // =============================================================================
 
-describe('AC-1: Admin roles see review queue instead of personal KYC form', () => {
-  it('NationalAdmin sees "Identity & KYC Review" heading (queue view)', () => {
+describe('AC-1: The review queue renders its own heading, not the personal KYC form', () => {
+  it('renders the "Identity & KYC Review" heading', () => {
     adminSubmissionsState = {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByText('Identity & KYC Review')).toBeInTheDocument();
   });
 
-  it('SuperAdmin sees "Identity & KYC Review" heading (queue view)', () => {
+  it('does NOT render the personal "Identity & KYC" form heading', () => {
     adminSubmissionsState = {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('SuperAdmin');
-    expect(screen.getByText('Identity & KYC Review')).toBeInTheDocument();
-  });
-
-  it('NationalAdmin does NOT see personal "Identity & KYC" page heading', () => {
-    adminSubmissionsState = {
-      isLoading: false,
-      data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
-    };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     // The personal form heading is just "Identity & KYC" (no "Review" suffix)
     // The queue heading is "Identity & KYC Review"
     // We want the personal form heading to be absent
@@ -269,12 +282,12 @@ describe('AC-1: Admin roles see review queue instead of personal KYC form', () =
     expect(personalFormHeading).toBeUndefined();
   });
 
-  it('NationalAdmin sees the status filter select (queue-specific element)', () => {
+  it('renders the status filter select (queue-specific element)', () => {
     adminSubmissionsState = {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 });
@@ -295,29 +308,29 @@ describe('AC-2: Queue rows show full name, email, document type, submitted date'
   });
 
   it('shows the submitter full name in the table', () => {
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByText('Jane Okonkwo')).toBeInTheDocument();
   });
 
   it('shows the submitter email in the table', () => {
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByText('jane@example.com')).toBeInTheDocument();
   });
 
   it('shows the human-readable document type label in the table', () => {
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByText('National ID')).toBeInTheDocument();
   });
 
   it('shows a submitted date in the table', () => {
-    renderDashboard('NationalAdmin');
+    renderQueue();
     // The date rendered is primary_document.uploaded_at or created_at formatted as locale date
     const dateStr = new Date('2024-01-10T09:00:00.000Z').toLocaleDateString();
     expect(screen.getByText(dateStr)).toBeInTheDocument();
   });
 
   it('shows table column headers: Full Name, Email, Document Type, Submitted, Status', () => {
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByText('Full Name')).toBeInTheDocument();
     expect(screen.getByText('Email')).toBeInTheDocument();
     expect(screen.getByText('Document Type')).toBeInTheDocument();
@@ -336,7 +349,7 @@ describe('AC-3: Pagination renders only when total > 20', () => {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 20, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     // Pagination component renders Previous/Next buttons; should be absent when total <= 20
     expect(screen.queryByRole('button', { name: /Previous/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Next/i })).not.toBeInTheDocument();
@@ -347,7 +360,7 @@ describe('AC-3: Pagination renders only when total > 20', () => {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.queryByRole('button', { name: /Previous/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Next/i })).not.toBeInTheDocument();
   });
@@ -357,7 +370,7 @@ describe('AC-3: Pagination renders only when total > 20', () => {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 21, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     // Pagination component renders Previous and Next buttons when total > PAGE_SIZE (20)
     expect(screen.getByRole('button', { name: /Previous/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Next/i })).toBeInTheDocument();
@@ -368,7 +381,7 @@ describe('AC-3: Pagination renders only when total > 20', () => {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 100, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByRole('button', { name: /Previous/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Next/i })).toBeInTheDocument();
   });
@@ -384,7 +397,7 @@ describe('AC-4: Status filter drives the query; filter change resets page to 1',
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     const select = screen.getByRole('combobox') as HTMLSelectElement;
     expect(select.value).toBe('submitted');
   });
@@ -394,7 +407,7 @@ describe('AC-4: Status filter drives the query; filter change resets page to 1',
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByRole('option', { name: /Submitted/i })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: /Verified/i })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: /Rejected/i })).toBeInTheDocument();
@@ -406,7 +419,7 @@ describe('AC-4: Status filter drives the query; filter change resets page to 1',
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'verified');
     expect(lastQueriedStatus).toBe('verified');
@@ -417,7 +430,7 @@ describe('AC-4: Status filter drives the query; filter change resets page to 1',
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'all');
     // After filter change, the hook should be querying page 1
@@ -435,7 +448,7 @@ describe('AC-5: Empty queue shows "No KYC submissions found" message', () => {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(
       screen.getByText(/No KYC submissions found/i)
     ).toBeInTheDocument();
@@ -446,7 +459,7 @@ describe('AC-5: Empty queue shows "No KYC submissions found" message', () => {
       isLoading: false,
       data: { success: true, data: { submissions: [], total: 0, page: 1, limit: 20 } },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByText('0 results')).toBeInTheDocument();
   });
 });
@@ -820,7 +833,7 @@ describe('AC-17: Queue row with no primary_document shows "—" in Document Type
         data: { submissions: [SUBMISSION_NO_DOC], total: 1, page: 1, limit: 20 },
       },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     // The DOC_TYPE_LABELS lookup returns undefined for empty string → fallback "—"
     expect(screen.getByText('—')).toBeInTheDocument();
   });
@@ -833,7 +846,7 @@ describe('AC-17: Queue row with no primary_document shows "—" in Document Type
         data: { submissions: [SUBMISSION_NO_DOC], total: 1, page: 1, limit: 20 },
       },
     };
-    expect(() => renderDashboard('NationalAdmin')).not.toThrow();
+    expect(() => renderQueue()).not.toThrow();
   });
 
   it('still shows submitter full name when primary_document is null', () => {
@@ -844,7 +857,7 @@ describe('AC-17: Queue row with no primary_document shows "—" in Document Type
         data: { submissions: [SUBMISSION_NO_DOC], total: 1, page: 1, limit: 20 },
       },
     };
-    renderDashboard('NationalAdmin');
+    renderQueue();
     expect(screen.getByText('Ade Musa')).toBeInTheDocument();
   });
 
