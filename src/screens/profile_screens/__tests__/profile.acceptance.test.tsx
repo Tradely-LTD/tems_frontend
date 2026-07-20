@@ -329,7 +329,8 @@ describe('AC-06: ChangePasswordScreen renders three password fields and submit',
 
   it('has new password field', () => {
     renderWithStore(<ChangePasswordScreen />);
-    expect(screen.getByLabelText(/new password/i)).toBeInTheDocument();
+    // Exact match — /new password/i also matches "Confirm new password"
+    expect(screen.getByLabelText('New password')).toBeInTheDocument();
   });
 
   it('has confirm new password field', () => {
@@ -413,7 +414,11 @@ describe('AC-10: ChangeEmailScreen step 1 has email input; step 2 has OTP input 
     await userEvent.type(screen.getByLabelText(/new email address/i), 'newemail@example.com');
     await userEvent.click(screen.getByRole('button', { name: /send verification code/i }));
     expect(await screen.findByLabelText(/verification code/i)).toBeInTheDocument();
-    expect(screen.getByText(/Code sent to/i)).toBeInTheDocument();
+    // Anchored to the start — the page's static subtitle ("Enter the
+    // verification code sent to your new email...") also contains "code sent
+    // to" as a substring, so an unanchored /Code sent to/i matches both it
+    // and the dynamic OTP paragraph this test is actually checking for.
+    expect(screen.getByText(/^Code sent to/i)).toBeInTheDocument();
     expect(screen.getByText('newemail@example.com')).toBeInTheDocument();
   });
 
