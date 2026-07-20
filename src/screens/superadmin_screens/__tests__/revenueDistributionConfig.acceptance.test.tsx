@@ -247,7 +247,10 @@ describe('AC-07: Fee preview', () => {
     await user.click(screen.getByText('Fee Preview'));
 
     await user.type(screen.getByPlaceholderText('e.g. MAIZE'), 'MAIZE');
-    await user.type(screen.getByPlaceholderText('e.g. Kano'), 'Kano');
+    // State is a <select> of Nigerian states (data-quality fix — free text
+    // allowed typos), not a text input — no placeholder to type into anymore.
+    const stateSelect = screen.getByText('State *').parentElement!.querySelector('select')!;
+    await user.selectOptions(stateSelect, 'Kano');
     const quantityInput = screen.getByText('Quantity *').parentElement!.querySelector('input')!;
     await user.clear(quantityInput);
     await user.type(quantityInput, '100');
