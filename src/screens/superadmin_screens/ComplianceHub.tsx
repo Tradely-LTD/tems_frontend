@@ -8,7 +8,7 @@ import { useListOrgsQuery } from './services/orgSlice';
 import { useGetAgentsQuery } from '@/screens/agent_screens/services/agentSlice';
 import { buildSubConcDetailRoute, buildAgentDetailRoute } from '@/constants/routes';
 
-type Tab = 'overview' | 'identity' | 'subconcessionaires' | 'agents';
+type Tab = 'overview' | 'subconcessionaires' | 'agents';
 
 const OVERVIEW_METRICS = [
   { label: 'Overall Compliance Score', value: '87%',  color: '#096c4b', bg: '#e6f4ef', desc: 'Across all entities'           },
@@ -64,7 +64,6 @@ export default function ComplianceHub() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'overview',           label: 'Overview'           },
-    { key: 'identity',           label: 'Identity Portal'    },
     { key: 'subconcessionaires', label: 'Sub-Concessionaires'},
     { key: 'agents',             label: 'Agents'             },
   ];
@@ -74,7 +73,7 @@ export default function ComplianceHub() {
 
       <div>
         <h1 className="text-[22px] font-bold text-[#1a1b20]">Compliance Hub</h1>
-        <p className="text-[13px] text-[#64748b] mt-0.5">Identity verification, entity compliance, and flag management</p>
+        <p className="text-[13px] text-[#64748b] mt-0.5">Entity compliance and flag management — identity/KYC review is in IAM Hub</p>
       </div>
 
       {/* Tabs */}
@@ -105,7 +104,7 @@ export default function ComplianceHub() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {[
-              { label: 'Identity Portal', desc: 'Review pending KYC documents', route: () => setTab('identity'), linkText: 'Reviewed in IAM Hub →' },
+              { label: 'Identity Portal', desc: 'Reviewed from IAM Hub', route: () => navigate('/dashboard/user-management?tab=kyc'), linkText: 'Open IAM Hub →' },
               { label: 'Sub-Concessionaires', desc: 'Check partner compliance', route: () => setTab('subconcessionaires'), linkText: '6 pending →' },
               { label: 'Agents', desc: 'Review flagged agents', route: () => setTab('agents'), linkText: '4 pending →' },
             ].map((c) => (
@@ -120,27 +119,6 @@ export default function ComplianceHub() {
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {tab === 'identity' && (
-        <div className="bg-white rounded-xl border border-[#e2e4ed] p-10 flex flex-col items-center justify-center text-center gap-4">
-          <div className="bg-[#e8edf7] rounded-full w-14 h-14 flex items-center justify-center">
-            <span className="text-[#002366] text-[24px]">⚿</span>
-          </div>
-          <div>
-            <p className="text-[16px] font-bold text-[#1a1b20]">Identity review lives in IAM Hub</p>
-            <p className="text-[13px] text-[#64748b] mt-1 max-w-[420px]">
-              KYC submissions for agents, sub-concessionaires, and other stakeholders are reviewed and
-              approved from the Identity &amp; Access Management hub, alongside user and permission management.
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/dashboard/user-management?tab=kyc')}
-            className="bg-[#002366] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#001a4d] transition-colors"
-          >
-            Open IAM Hub → KYC Review
-          </button>
         </div>
       )}
 

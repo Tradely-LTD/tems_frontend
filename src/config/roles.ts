@@ -77,11 +77,10 @@ export const NAV_ITEMS: Record<RoleName, NavItemConfig[]> = {
       ],
     },
     {
-      label: 'Agents & Identity', path: '', iconKey: 'users',
+      label: 'Agents', path: '', iconKey: 'users',
       children: [
         { label: 'Agent Network',  path: '/dashboard/agent-network', iconKey: 'users',    built: true },
         { label: 'All Agents',     path: '/dashboard/agents',        iconKey: 'users',    built: true },
-        { label: 'Identity & KYC', path: '/dashboard/identity',      iconKey: 'identity', built: true },
       ],
     },
     {
@@ -94,7 +93,7 @@ export const NAV_ITEMS: Record<RoleName, NavItemConfig[]> = {
     },
     { label: 'State Monitor',   path: '/dashboard/state-monitor',   iconKey: 'chart', section: 'INTELLIGENCE',    built: true },
     { label: 'Revenue Distribution', path: '/dashboard/revenue', iconKey: 'revenue', section: 'FINANCE', built: true },
-    { label: 'User Management', path: '/dashboard/user-management', iconKey: 'users', section: 'ADMINISTRATION', built: true },
+    { label: 'IAM Hub', path: '/dashboard/user-management', iconKey: 'users', section: 'ADMINISTRATION', built: true },
     { label: 'Support Inbox',   path: '/dashboard/support-inbox',  iconKey: 'help',  built: true },
     { label: 'Commodity Flow',  path: '/dashboard/commodity-flow', iconKey: 'chart', built: true },
     { label: 'System Settings', path: '/dashboard/settings',       iconKey: 'gear',  built: true },
@@ -103,7 +102,6 @@ export const NAV_ITEMS: Record<RoleName, NavItemConfig[]> = {
     { label: 'Overview',       path: '__home__',            iconKey: 'home',     built: true },
     { label: 'Waybills',       path: '/dashboard/waybills', iconKey: 'document', section: 'TRADE OPERATIONS', built: true },
     { label: 'Agents',         path: '/dashboard/agents',   iconKey: 'users',    built: true },
-    { label: 'Identity & KYC', path: '/dashboard/identity', iconKey: 'identity', built: true },
     {
       label: 'Intelligence & Revenue', path: '', iconKey: 'revenue', section: 'INTELLIGENCE',
       children: [
@@ -112,7 +110,11 @@ export const NAV_ITEMS: Record<RoleName, NavItemConfig[]> = {
         { label: 'Enforcement Ops', path: '/dashboard/enforcement-ops', iconKey: 'shield',   built: false },
       ],
     },
-    { label: 'System Settings', path: '/dashboard/settings', iconKey: 'gear', section: 'ADMINISTRATION', built: true },
+    // NationalAdmin had no other path to IAM Hub before this — the old
+    // "Identity & KYC" item just redirected here, so this replaces it
+    // directly rather than leaving NationalAdmin with no way in at all.
+    { label: 'IAM Hub',         path: '/dashboard/user-management', iconKey: 'users', section: 'ADMINISTRATION', built: true },
+    { label: 'System Settings', path: '/dashboard/settings',        iconKey: 'gear',  section: 'ADMINISTRATION', built: true },
   ],
   JRBAccount: [
     { label: 'Overview',        path: '__home__',                 iconKey: 'home',     built: true },
