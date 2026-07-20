@@ -70,7 +70,7 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
     width: `${widthMm}mm`,
     margin: '0 auto',
     backgroundColor: '#fff',
-    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontFamily: "'Public Sans', system-ui, sans-serif",
     fontSize: `${base}px`,
     color: '#000',
     border: '1px solid #000',
@@ -112,7 +112,7 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
     wordBreak: 'break-word',
   };
 
-  const mono: React.CSSProperties = { ...val, fontFamily: 'Courier New, monospace', fontWeight: 'bold' };
+  const mono: React.CSSProperties = { ...val, fontFamily: "'JetBrains Mono', Menlo, monospace", fontWeight: 'bold' };
 
   const divider: React.CSSProperties = { borderTop: '2px solid #000', margin: 0 };
 
@@ -329,7 +329,7 @@ const WaybillReceipt = React.forwardRef<HTMLDivElement, Props>(({ waybill, confi
                 <React.Fragment key={p.id}>
                   <tr style={{ backgroundColor: i % 2 ? '#fafafa' : '#fff' }}>
                     <td style={{ ...td('center'), borderBottom: narrow && p.description ? 'none' : undefined }}>{i + 1}</td>
-                    <td style={{ ...td(), fontFamily: 'Courier New, monospace', borderBottom: narrow && p.description ? 'none' : undefined }}>{p.commodity_code}</td>
+                    <td style={{ ...td(), fontFamily: "'JetBrains Mono', Menlo, monospace", borderBottom: narrow && p.description ? 'none' : undefined }}>{p.commodity_code}</td>
                     {!narrow && <td style={td()}>{p.description}</td>}
                     <td style={{ ...td('right'), borderBottom: narrow && p.description ? 'none' : undefined }}>{p.quantity}</td>
                     <td style={{ ...td(), borderBottom: narrow && p.description ? 'none' : undefined }}>{p.unit}</td>
