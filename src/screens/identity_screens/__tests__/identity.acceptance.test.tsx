@@ -110,6 +110,13 @@ vi.mock('../services/identitySlice', () => ({
   ],
 }));
 
+// useDocumentSubmit uploads to Supabase Storage before calling submitDocument —
+// mock it so tests don't hit real network, and so id_type is the only thing
+// that ends up in the submitDocument payload (per AC-10's "no other fields").
+vi.mock('@/config/supabase', () => ({
+  uploadKycFile: vi.fn().mockResolvedValue('https://example.test/fake-upload-url'),
+}));
+
 // ─── Store factory ────────────────────────────────────────────────────────────
 
 type UserOverride = {
@@ -251,7 +258,15 @@ async function reachStep2(store = makeStore({ role_name: 'Agent' })) {
   await userEvent.click(continueBtn);
 
   // Step 2 renders IdentityDocumentUpload with an h2 heading "Document Type"
-  await screen.findByRole('heading', { name: 'Document Type' });
+  await screen.findByRole('heading', { name: 'Document Upload' });
+}
+
+// document_file is a required field (yup: must be a non-empty FileList) — every
+// path that submits Step 2 needs one attached or validation blocks the submit
+// handler and submitDocument is never called, regardless of id_type selection.
+async function attachDocumentFile() {
+  const file = new File(['id-scan'], 'id.png', { type: 'image/png' });
+  await userEvent.upload(screen.getByLabelText(/ID Document/i), file);
 }
 
 // ─── Reset state before each test ────────────────────────────────────────────
@@ -517,7 +532,7 @@ describe('AC-05: pending/rejected user can open 2-step form with all Step 1 fiel
     await userEvent.click(continueBtn);
 
     // Should advance to Step 2 (document type form) — h2 heading in IdentityDocumentUpload
-    expect(await screen.findByRole('heading', { name: 'Document Type' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Document Upload' })).toBeInTheDocument();
   });
 });
 
@@ -542,7 +557,7 @@ describe('AC-06: Step 1 submit calls POST /api/identity/profile; 200/201 → Ste
     await userEvent.click(await screen.findByRole('button', { name: /continue/i }));
 
     // Step 2 heading: h2 "Document Type" inside IdentityDocumentUpload
-    expect(await screen.findByRole('heading', { name: 'Document Type' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Document Upload' })).toBeInTheDocument();
   });
 
   it('submitProfile mutation is called when Continue is clicked', async () => {
@@ -561,7 +576,7 @@ describe('AC-06: Step 1 submit calls POST /api/identity/profile; 200/201 → Ste
 
     await userEvent.click(screen.getByRole('button', { name: /resubmit|get started/i }));
     await userEvent.click(await screen.findByRole('button', { name: /continue/i }));
-    await screen.findByRole('heading', { name: 'Document Type' });
+    await screen.findByRole('heading', { name: 'Document Upload' });
 
     expect(submitProfileArgs.length).toBe(1);
   });
@@ -587,7 +602,7 @@ describe('AC-06: Step 1 submit calls POST /api/identity/profile; 200/201 → Ste
     await userEvent.type(ninInput, '12345678901');
 
     await userEvent.click(screen.getByRole('button', { name: /continue/i }));
-    await screen.findByRole('heading', { name: 'Document Type' });
+    await screen.findByRole('heading', { name: 'Document Upload' });
 
     expect(submitProfileArgs.length).toBe(1);
     expect((submitProfileArgs[0] as Record<string, string>).nin).toBe('12345678901');
@@ -658,7 +673,7 @@ describe('AC-07: API errors on Step 1 display inline; form stays on Step 1', () 
     // Step 1 form heading still visible (the h2 inside IdentityProfileForm)
     expect(screen.getByRole('heading', { name: 'Identity Details' })).toBeInTheDocument();
     // Step 2 heading NOT visible (the h2 inside IdentityDocumentUpload)
-    expect(screen.queryByRole('heading', { name: 'Document Type' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Document Upload' })).not.toBeInTheDocument();
   });
 });
 
@@ -775,24 +790,28 @@ describe('AC-10: Step 2 submit calls POST /api/identity/kyc/documents with id_ty
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'passport');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     await waitFor(() => expect(submitDocumentArgs.length).toBe(1));
     expect((submitDocumentArgs[0] as { id_type: string }).id_type).toBe('passport');
   });
 
-  it('mutation payload contains only id_type (no other fields)', async () => {
+  it('mutation payload contains id_type and the uploaded document_url, no selfie_url when none attached', async () => {
     setSubmitDocumentSuccess();
     submitDocumentArgs.length = 0;
 
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'national_id');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     await waitFor(() => expect(submitDocumentArgs.length).toBe(1));
     const payload = submitDocumentArgs[0] as Record<string, unknown>;
-    expect(Object.keys(payload)).toEqual(['id_type']);
+    // document_url comes from the Supabase upload step; selfie_url is omitted
+    // entirely (not sent as undefined) since no selfie file was attached.
+    expect(Object.keys(payload).sort()).toEqual(['document_url', 'id_type']);
     expect(payload.id_type).toBe('national_id');
   });
 });
@@ -811,11 +830,12 @@ describe('AC-11: 201 from doc submit → flow closes, status refetched', () => {
 
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'national_id');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     // Flow closes — Document Type h2 heading should disappear
     await waitFor(() => {
-      expect(screen.queryByRole('heading', { name: 'Document Type' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: 'Document Upload' })).not.toBeInTheDocument();
     });
 
     // Summary view is back
@@ -842,10 +862,11 @@ describe('AC-11: 201 from doc submit → flow closes, status refetched', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /resubmit|get started/i }));
     await userEvent.click(await screen.findByRole('button', { name: /continue/i }));
-    await screen.findByRole('heading', { name: 'Document Type' });
+    await screen.findByRole('heading', { name: 'Document Upload' });
 
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'drivers_licence');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     await waitFor(() => {
@@ -865,6 +886,7 @@ describe('AC-12: 404 from doc submit → "Please complete Step 1 first" + Back b
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'passport');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     expect(
@@ -878,6 +900,7 @@ describe('AC-12: 404 from doc submit → "Please complete Step 1 first" + Back b
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'voters_card');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     await screen.findByText(/Please complete Step 1 first/i);
@@ -896,6 +919,7 @@ describe('AC-13: Non-404 errors on Step 2 show inline; user can retry', () => {
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'drivers_licence');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     expect(await screen.findByText('Internal server error')).toBeInTheDocument();
@@ -907,6 +931,7 @@ describe('AC-13: Non-404 errors on Step 2 show inline; user can retry', () => {
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'national_id');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     expect(await screen.findByText(/Submission failed. Please try again./i)).toBeInTheDocument();
@@ -918,6 +943,7 @@ describe('AC-13: Non-404 errors on Step 2 show inline; user can retry', () => {
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'passport');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     await screen.findByText('Internal server error');
@@ -931,11 +957,12 @@ describe('AC-13: Non-404 errors on Step 2 show inline; user can retry', () => {
     await reachStep2();
     const select = screen.getByRole('combobox');
     await userEvent.selectOptions(select, 'passport');
+    await attachDocumentFile();
     await userEvent.click(screen.getByRole('button', { name: /Submit Document/i }));
 
     await screen.findByText('Upload failed');
     // The h2 heading inside IdentityDocumentUpload should still be there
-    expect(screen.getByRole('heading', { name: 'Document Type' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Document Upload' })).toBeInTheDocument();
   });
 });
 
@@ -1027,7 +1054,7 @@ describe('AC-15: Back from Step 2 returns to Step 1; no extra API call; data pre
 
     await userEvent.click(screen.getByRole('button', { name: /resubmit|get started/i }));
     await userEvent.click(await screen.findByRole('button', { name: /continue/i }));
-    await screen.findByRole('heading', { name: 'Document Type' });
+    await screen.findByRole('heading', { name: 'Document Upload' });
 
     // Click Back on Step 2
     const backButtons = screen.getAllByRole('button', { name: /back/i });
@@ -1053,7 +1080,7 @@ describe('AC-15: Back from Step 2 returns to Step 1; no extra API call; data pre
 
     await userEvent.click(screen.getByRole('button', { name: /resubmit|get started/i }));
     await userEvent.click(await screen.findByRole('button', { name: /continue/i }));
-    await screen.findByRole('heading', { name: 'Document Type' });
+    await screen.findByRole('heading', { name: 'Document Upload' });
 
     const backButtons = screen.getAllByRole('button', { name: /back/i });
     await userEvent.click(backButtons[0]);
@@ -1083,7 +1110,7 @@ describe('AC-15: Back from Step 2 returns to Step 1; no extra API call; data pre
     await userEvent.type(addressInput, '123 Test Street');
 
     await userEvent.click(screen.getByRole('button', { name: /continue/i }));
-    await screen.findByRole('heading', { name: 'Document Type' });
+    await screen.findByRole('heading', { name: 'Document Upload' });
 
     const backButtons = screen.getAllByRole('button', { name: /back/i });
     await userEvent.click(backButtons[0]);
