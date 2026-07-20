@@ -126,7 +126,12 @@ export default function SubConcessionaireAdminHome() {
         </div>
 
         <div className="bg-white rounded-xl border border-[#e2e4ed] p-6">
-          <p className="text-[14px] font-semibold text-[#1a1b20] mb-4">Active Agents</p>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[14px] font-semibold text-[#1a1b20]">Active Agents</p>
+            <button onClick={() => navigate(ROUTES.AGENTS)} className="text-[12px] text-[#002366] font-medium hover:underline">
+              Manage Agents →
+            </button>
+          </div>
           {topAgents.length === 0 ? (
             <p className="text-[13px] text-[#94a3b8]">No agents yet.</p>
           ) : (

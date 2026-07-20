@@ -163,6 +163,18 @@ const sampleProfileInactive: AgentProfile = {
 
 describe('SubConcessionaireAdminHome', () => {
   it('AC-1: renders "Manage Agents" button that links to /dashboard/agents', () => {
+    // SubConcessionaireAdminHome also calls useGetAgentsQuery for its own
+    // "Active Agents" preview list — needs a return value or the component
+    // throws on the destructure before anything (including our button) renders.
+    mockGetAgents.mockReturnValue({
+      data: { success: true, data: [sampleAgent], meta: { page: 1, limit: 100, total: 1 } },
+      isLoading: false,
+      isFetching: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+
     renderWithProviders(
       <SubConcessionaireAdminHome />,
       'SubConcessionaireAdmin',
@@ -551,8 +563,8 @@ describe('AgentDetailScreen', () => {
 
     expect(screen.getByText('Agent Profile')).toBeInTheDocument();
 
-    // Full name
-    expect(screen.getByText('Amina Ibrahim')).toBeInTheDocument();
+    // Full name — appears in both the page subtitle and the Agent Information table
+    expect(screen.getAllByText('Amina Ibrahim').length).toBeGreaterThanOrEqual(1);
 
     // Email (AC-10)
     expect(screen.getByText('amina.ibrahim@example.com')).toBeInTheDocument();
