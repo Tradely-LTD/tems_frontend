@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   useListPlatformUsersQuery,
   useCreatePlatformUserMutation,
@@ -224,9 +225,16 @@ function PermissionsModal({
 // ─── main component ──────────────────────────────────────────────────────────
 
 type Tab = 'users' | 'kyc' | 'audit';
+const VALID_TABS: Tab[] = ['users', 'kyc', 'audit'];
 
 export default function UserAccessManagement() {
-  const [tab, setTab] = useState<Tab>('users');
+  // Deep-linkable via ?tab=kyc — e.g. from Compliance Hub or the identity
+  // self-service screen's "moved to IAM Hub" redirect, both of which point
+  // here at a specific tab rather than the default.
+  const [searchParams] = useSearchParams();
+  const requestedTab = searchParams.get('tab');
+  const initialTab = VALID_TABS.includes(requestedTab as Tab) ? (requestedTab as Tab) : 'users';
+  const [tab, setTab] = useState<Tab>(initialTab);
 
   // users tab state
   const [page, setPage]           = useState(1);

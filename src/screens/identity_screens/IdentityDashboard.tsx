@@ -66,7 +66,7 @@ export default function IdentityDashboard() {
           </p>
         </div>
         <button
-          onClick={() => navigate('/dashboard/user-management')}
+          onClick={() => navigate('/dashboard/user-management?tab=kyc')}
           className="bg-[#002366] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#001a4d] transition-colors"
         >
           Open IAM Hub

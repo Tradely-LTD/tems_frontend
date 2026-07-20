@@ -4,7 +4,6 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
 import { useListOrgsQuery } from './services/orgSlice';
 import { useGetAgentsQuery } from '@/screens/agent_screens/services/agentSlice';
 import { buildSubConcDetailRoute, buildAgentDetailRoute } from '@/constants/routes';
@@ -16,14 +15,6 @@ const OVERVIEW_METRICS = [
   { label: 'Pending KYC Reviews',      value:  '34',  color: '#856e0e', bg: '#fdf8e3', desc: 'Agents awaiting approval'      },
   { label: 'Flagged Entities',          value:   '9',  color: '#b91c1c', bg: '#fee2e2', desc: '7 agents, 2 sub-conc'          },
   { label: 'Expired Documents',         value:  '12',  color: '#64748b', bg: '#f1f3f9', desc: 'Require renewal action'        },
-];
-
-const IDENTITY_QUEUE = [
-  { name: 'Fatima Sule',      id: 'AGT-00443', type: 'Agent', docType: 'NIN',        submitted: '2024-06-22', status: 'Pending'  },
-  { name: 'Umar Abdullahi',   id: 'AGT-00441', type: 'Agent', docType: 'BVN + NIN',  submitted: '2024-06-21', status: 'Pending'  },
-  { name: 'Ngozi Eze',        id: 'AGT-00438', type: 'Agent', docType: 'CAC Cert',   submitted: '2024-06-21', status: 'Pending'  },
-  { name: 'Zaria Agro Ltd',   id: 'SUB-00018', type: 'Sub-Conc', docType: 'CAC + KYC', submitted: '2024-06-20', status: 'Under Review' },
-  { name: 'James Okoro',      id: 'AGT-00398', type: 'Agent', docType: 'NIN',        submitted: '2024-06-19', status: 'Flagged'  },
 ];
 
 const SUBCONC_LIST = [
@@ -114,9 +105,9 @@ export default function ComplianceHub() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {[
-              { label: 'Identity Portal', desc: 'Review pending KYC documents', route: () => setTab('identity'), count: 5   },
-              { label: 'Sub-Concessionaires', desc: 'Check partner compliance', route: () => setTab('subconcessionaires'), count: 6 },
-              { label: 'Agents', desc: 'Review flagged agents', route: () => setTab('agents'), count: 4 },
+              { label: 'Identity Portal', desc: 'Review pending KYC documents', route: () => setTab('identity'), linkText: 'Reviewed in IAM Hub →' },
+              { label: 'Sub-Concessionaires', desc: 'Check partner compliance', route: () => setTab('subconcessionaires'), linkText: '6 pending →' },
+              { label: 'Agents', desc: 'Review flagged agents', route: () => setTab('agents'), linkText: '4 pending →' },
             ].map((c) => (
               <button
                 key={c.label}
@@ -125,7 +116,7 @@ export default function ComplianceHub() {
               >
                 <p className="text-[14px] font-semibold text-[#1a1b20]">{c.label}</p>
                 <p className="text-[12px] text-[#64748b] mt-1">{c.desc}</p>
-                <p className="text-[11px] font-semibold text-[#002366] mt-2">{c.count} pending →</p>
+                <p className="text-[11px] font-semibold text-[#002366] mt-2">{c.linkText}</p>
               </button>
             ))}
           </div>
@@ -133,53 +124,23 @@ export default function ComplianceHub() {
       )}
 
       {tab === 'identity' && (
-        <div className="bg-white rounded-xl border border-[#e2e4ed] overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e4ed]">
-            <p className="text-[14px] font-semibold text-[#1a1b20]">Pending Identity Reviews</p>
-            <button
-              onClick={() => navigate(ROUTES.IDENTITY)}
-              className="text-[12px] text-[#002366] font-medium hover:underline"
-            >
-              Open Identity Portal →
-            </button>
+        <div className="bg-white rounded-xl border border-[#e2e4ed] p-10 flex flex-col items-center justify-center text-center gap-4">
+          <div className="bg-[#e8edf7] rounded-full w-14 h-14 flex items-center justify-center">
+            <span className="text-[#002366] text-[24px]">⚿</span>
           </div>
-          <div className="overflow-x-auto">
-          <table className="w-full text-[13px]">
-            <thead className="bg-[#f8f9fc] border-b border-[#e2e4ed]">
-              <tr>
-                <th className="text-left font-semibold text-[#64748b] px-5 py-3">Name</th>
-                <th className="text-left font-semibold text-[#64748b] px-4 py-3">ID</th>
-                <th className="text-left font-semibold text-[#64748b] px-4 py-3">Type</th>
-                <th className="text-left font-semibold text-[#64748b] px-4 py-3">Document</th>
-                <th className="text-left font-semibold text-[#64748b] px-4 py-3">Submitted</th>
-                <th className="text-left font-semibold text-[#64748b] px-4 py-3">Status</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {IDENTITY_QUEUE.map((item) => {
-                const s = STAT[item.status] ?? STAT.Pending;
-                return (
-                  <tr key={item.id} className="border-b border-[#f1f3f9] last:border-0">
-                    <td className="px-5 py-3.5 font-medium text-[#1a1b20]">{item.name}</td>
-                    <td className="px-4 py-3.5 font-mono text-[#64748b]">{item.id}</td>
-                    <td className="px-4 py-3.5 text-[#64748b]">{item.type}</td>
-                    <td className="px-4 py-3.5 text-[#64748b]">{item.docType}</td>
-                    <td className="px-4 py-3.5 text-[#64748b]">{item.submitted}</td>
-                    <td className="px-4 py-3.5">
-                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: s.bg, color: s.color }}>
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <button onClick={() => navigate(ROUTES.IDENTITY)} className="text-[12px] text-[#002366] font-medium hover:underline">Review</button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div>
+            <p className="text-[16px] font-bold text-[#1a1b20]">Identity review lives in IAM Hub</p>
+            <p className="text-[13px] text-[#64748b] mt-1 max-w-[420px]">
+              KYC submissions for agents, sub-concessionaires, and other stakeholders are reviewed and
+              approved from the Identity &amp; Access Management hub, alongside user and permission management.
+            </p>
           </div>
+          <button
+            onClick={() => navigate('/dashboard/user-management?tab=kyc')}
+            className="bg-[#002366] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#001a4d] transition-colors"
+          >
+            Open IAM Hub → KYC Review
+          </button>
         </div>
       )}
 
