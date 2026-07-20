@@ -4,11 +4,24 @@ import EditRevenueRuleModal from './EditRevenueRuleModal';
 import { RULE_SCOPES, RULE_STATUSES } from './schema/revenueRuleValidationSchema';
 import { formatNGN, formatRate } from './utils/revenueFormatters';
 import { NIGERIAN_STATE_NAMES, getLgasForState } from '@/constants/nigeria';
+import { InfoTooltip } from '@/components/InfoTooltip';
 
-const TABS: { key: 'authorities' | 'rules' | 'preview'; label: string }[] = [
-  { key: 'authorities', label: 'Revenue Authorities' },
-  { key: 'rules', label: 'Revenue Rules' },
-  { key: 'preview', label: 'Fee Preview' },
+const TABS: { key: 'authorities' | 'rules' | 'preview'; label: string; info: string }[] = [
+  {
+    key: 'authorities',
+    label: 'Revenue Authorities',
+    info: 'The federal, state, LGA, market, and platform stakeholders who receive a share of collected levies. Each one needs verified bank details before it can be paid out during settlement.',
+  },
+  {
+    key: 'rules',
+    label: 'Revenue Rules',
+    info: 'The fee an authority charges — scoped by commodity and location, and calculated as flat, per kg, per tonne, or a % of declared value. Rules stack: several authorities can each have a matching rule on the same shipment, and a more specific rule (e.g. state) overrides a broader one (e.g. global) for the same authority.',
+  },
+  {
+    key: 'preview',
+    label: 'Fee Preview',
+    info: 'A calculator, not a form — nothing here is saved. It runs the same rule-resolution logic a real waybill uses, so you can check that a new or edited rule produces the fee breakdown you intended before any trader is charged.',
+  },
 ];
 
 export default function RevenueDistributionConfig() {
@@ -86,17 +99,19 @@ export default function RevenueDistributionConfig() {
 
       <div className="flex gap-1 border-b border-[#e2e4ed] overflow-x-auto">
         {TABS.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`px-4 py-2.5 text-[13px] font-semibold border-b-2 transition-colors ${
-              tab === t.key
-                ? 'border-[#002366] text-[#002366]'
-                : 'border-transparent text-[#64748b] hover:text-[#1a1b20]'
-            }`}
-          >
-            {t.label}
-          </button>
+          <span key={t.key} className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => setTab(t.key)}
+              className={`px-4 py-2.5 text-[13px] font-semibold border-b-2 transition-colors ${
+                tab === t.key
+                  ? 'border-[#002366] text-[#002366]'
+                  : 'border-transparent text-[#64748b] hover:text-[#1a1b20]'
+              }`}
+            >
+              {t.label}
+            </button>
+            <InfoTooltip text={t.info} className="-ml-2" />
+          </span>
         ))}
       </div>
 
