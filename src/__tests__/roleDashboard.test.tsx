@@ -306,33 +306,36 @@ describe('AC-4: NAV_ITEMS scopes exactly the right items for each role', () => {
     }
   });
 
-  it('SuperAdmin has 9 nav items (includes Agents)', () => {
-    expect(NAV_ITEMS['SuperAdmin']).toHaveLength(9);
+  it('SuperAdmin has 11 nav items (includes Agents)', () => {
+    expect(NAV_ITEMS['SuperAdmin']).toHaveLength(11);
     const labels = NAV_ITEMS['SuperAdmin'].map((i) => i.label);
     expect(labels).toContain('Agents');
   });
 
-  it('Agent has exactly 4 nav items (Overview + Waybills + My Profile + Identity & KYC)', () => {
+  it('Agent has exactly 5 nav items (Overview + Waybills + My Profile + Identity & KYC + Report Incident)', () => {
     // I-4 fix: Agent is a KYC submitter role so Identity & KYC must appear in their nav
     // Agent module: My Profile added for self-service profile access
-    expect(NAV_ITEMS['Agent']).toHaveLength(4);
+    // Report Incident added for field-reported incidents
+    expect(NAV_ITEMS['Agent']).toHaveLength(5);
     const labels = NAV_ITEMS['Agent'].map((i) => i.label);
     expect(labels).toContain('Overview');
     expect(labels).toContain('Waybills');
     expect(labels).toContain('Identity & KYC');
     expect(labels).toContain('My Profile');
+    expect(labels).toContain('Report Incident');
     // Agent must NOT see admin-only items
-    expect(labels).not.toContain('User Management');
+    expect(labels).not.toContain('IAM Hub');
     expect(labels).not.toContain('System Settings');
     expect(labels).not.toContain('Enforcement Ops');
   });
 
-  it('EnforcementOfficer has exactly 2 nav items (Overview + Enforcement Ops)', () => {
-    expect(NAV_ITEMS['EnforcementOfficer']).toHaveLength(2);
+  it('EnforcementOfficer has exactly 3 nav items (Command Centre + Incident Reporting + Audit Report)', () => {
+    expect(NAV_ITEMS['EnforcementOfficer']).toHaveLength(3);
     const labels = NAV_ITEMS['EnforcementOfficer'].map((i) => i.label);
-    expect(labels).toContain('Overview');
-    expect(labels).toContain('Enforcement Ops');
-    expect(labels).not.toContain('User Management');
+    expect(labels).toContain('Command Centre');
+    expect(labels).toContain('Incident Reporting');
+    expect(labels).toContain('Audit Report');
+    expect(labels).not.toContain('IAM Hub');
   });
 
   it('Buyer has exactly 2 nav items (Overview + Waybills)', () => {
@@ -342,9 +345,9 @@ describe('AC-4: NAV_ITEMS scopes exactly the right items for each role', () => {
     expect(labels).toContain('Waybills');
   });
 
-  it('Auditor does NOT have User Management or System Settings', () => {
+  it('Auditor does NOT have IAM Hub or System Settings', () => {
     const labels = NAV_ITEMS['Auditor'].map((i) => i.label);
-    expect(labels).not.toContain('User Management');
+    expect(labels).not.toContain('IAM Hub');
     expect(labels).not.toContain('System Settings');
   });
 
@@ -357,12 +360,15 @@ describe('AC-4: NAV_ITEMS scopes exactly the right items for each role', () => {
     expect(labels).toContain('System Settings');
   });
 
-  it('LGAAdmin has 5 items (includes Agents) and no Revenue or Partners', () => {
-    expect(NAV_ITEMS['LGAAdmin']).toHaveLength(5);
+  it('LGAAdmin has 4 items (includes Agents) and no Revenue, Partners, or Identity & KYC', () => {
+    expect(NAV_ITEMS['LGAAdmin']).toHaveLength(4);
     const labels = NAV_ITEMS['LGAAdmin'].map((i) => i.label);
     expect(labels).toContain('Agents');
     expect(labels).not.toContain('Revenue');
     expect(labels).not.toContain('Partners');
+    // LGAAdmin has neither identity:submit nor identity:read/verify — no
+    // destination for this item would work, so it isn't shown at all.
+    expect(labels).not.toContain('Identity & KYC');
   });
 
   it('Overview "__home__" path is present for all roles', () => {

@@ -150,8 +150,11 @@ export const NAV_ITEMS: Record<RoleName, NavItemConfig[]> = {
   LGAAdmin: [
     { label: 'Overview',        path: '__home__',                   iconKey: 'home',     built: true },
     { label: 'Waybills',        path: '/dashboard/waybills',        iconKey: 'document', section: 'TRADE OPERATIONS', built: true },
+    // No "Identity & KYC" here deliberately: LGAAdmin has neither identity:submit
+    // (not a self-submitter) nor identity:read/verify (can't review), so every
+    // destination that item could point to would 403. Per-agent KYC status is
+    // already visible read-only via Agents → agent detail.
     { label: 'Agents',          path: '/dashboard/agents',          iconKey: 'users',    built: true },
-    { label: 'Identity & KYC',  path: '/dashboard/identity',        iconKey: 'identity', built: true },
     { label: 'Enforcement Ops', path: '/dashboard/enforcement-ops', iconKey: 'shield',   section: 'INTELLIGENCE', built: false },
   ],
   MarketAdmin: [
@@ -216,16 +219,16 @@ export interface KpiCard {
 }
 
 export const ROLE_KPI_CARDS: Record<RoleName, KpiCard[]> = {
-  SuperAdmin:             [{ label: 'Total Users', accentColor: '#002366' }, { label: 'Total Revenue', accentColor: '#D4AF37' }, { label: 'Active Waybills', accentColor: '#096c4b' }, { label: 'System Alerts', accentColor: '#D83B01' }],
-  NationalAdmin:          [{ label: 'Total Revenue', accentColor: '#D4AF37' }, { label: 'Active Waybills', accentColor: '#002366' }, { label: 'Pending KYC', accentColor: '#096c4b' }, { label: 'Partners', accentColor: '#6B21A8' }],
+  SuperAdmin:             [{ label: 'Total Waybills (Month)', accentColor: '#002366' }, { label: 'Platform Revenue (Month)', accentColor: '#D4AF37' }, { label: 'Active Agents', accentColor: '#096c4b' }, { label: 'Sub-Concessionaires', accentColor: '#D83B01' }],
+  NationalAdmin:          [{ label: 'Revenue This Month', accentColor: '#D4AF37' }, { label: 'Waybills (Monthly)', accentColor: '#002366' }, { label: 'Active Agents', accentColor: '#096c4b' }, { label: 'Sub-Concessionaires', accentColor: '#6B21A8' }],
   JRBAccount:             [{ label: 'Revenue This Month', accentColor: '#D4AF37' }, { label: 'Waybills Processed', accentColor: '#002366' }, { label: 'Collections', accentColor: '#096c4b' }],
   FederalGovtAccount:     [{ label: 'Revenue This Month', accentColor: '#D4AF37' }, { label: 'Waybills Processed', accentColor: '#002366' }, { label: 'Collections', accentColor: '#096c4b' }],
   StateAdmin:             [{ label: 'State Revenue', accentColor: '#D4AF37' }, { label: 'Active Waybills', accentColor: '#002366' }, { label: 'Pending KYC', accentColor: '#096c4b' }, { label: 'Enforcement Actions', accentColor: '#D83B01' }],
   LGAAdmin:               [{ label: 'LGA Waybills', accentColor: '#002366' }, { label: 'Pending KYC', accentColor: '#096c4b' }, { label: 'Enforcement Actions', accentColor: '#D83B01' }],
   MarketAdmin:            [{ label: 'Market Waybills', accentColor: '#002366' }, { label: 'Active Agents', accentColor: '#096c4b' }, { label: 'Partners', accentColor: '#6B21A8' }],
-  Agent:                  [{ label: 'My Waybills Today', accentColor: '#002366' }, { label: 'Pending', accentColor: '#D4AF37' }, { label: 'Completed', accentColor: '#096c4b' }, { label: 'Revenue Generated', accentColor: '#6B21A8' }],
-  EnforcementOfficer:     [{ label: 'Active Checks', accentColor: '#002366' }, { label: 'Violations Today', accentColor: '#D83B01' }, { label: 'Cleared Vehicles', accentColor: '#096c4b' }],
-  SubConcessionaireAdmin: [{ label: 'Waybills Issued', accentColor: '#002366' }, { label: 'Revenue', accentColor: '#D4AF37' }, { label: 'Active Partners', accentColor: '#6B21A8' }],
+  Agent:                  [{ label: 'Waybills Today', accentColor: '#002366' }, { label: 'Pending', accentColor: '#D4AF37' }, { label: 'Delivered', accentColor: '#096c4b' }, { label: 'Float Balance', accentColor: '#6B21A8' }],
+  EnforcementOfficer:     [{ label: 'Active Checkpoints', accentColor: '#002366' }, { label: 'Incidents Today', accentColor: '#D83B01' }, { label: 'Vehicles Cleared', accentColor: '#096c4b' }],
+  SubConcessionaireAdmin: [{ label: 'Waybills Issued Today', accentColor: '#002366' }, { label: 'Revenue This Month', accentColor: '#D4AF37' }, { label: 'Compliance Rate', accentColor: '#6B21A8' }],
   CorporateAccount:       [{ label: 'Waybills Issued', accentColor: '#002366' }, { label: 'Pending KYC', accentColor: '#096c4b' }, { label: 'Active Shipments', accentColor: '#D4AF37' }],
   Auditor:                [{ label: 'Revenue This Month', accentColor: '#D4AF37' }, { label: 'Total Waybills', accentColor: '#002366' }, { label: 'Audit Flags', accentColor: '#D83B01' }],
   Buyer:                  [{ label: 'My Waybills', accentColor: '#002366' }, { label: 'In Transit', accentColor: '#D4AF37' }, { label: 'Delivered', accentColor: '#096c4b' }],
@@ -236,7 +239,7 @@ export const ROLE_HOME_INFO: Record<RoleName, { title: string; subtitle: string 
   NationalAdmin:           { title: 'Strategic Oversight Dashboard',   subtitle: 'National trade infrastructure — federal view' },
   JRBAccount:              { title: 'National Revenue Oversight',      subtitle: 'JRB levy schedules and revenue distribution' },
   FederalGovtAccount:      { title: 'Federal Government Portal',       subtitle: 'Revenue compliance and national waybill data' },
-  StateAdmin:              { title: 'Kano State Trade Intelligence',    subtitle: 'State-level trade operations, corridors, and revenue' },
+  StateAdmin:              { title: 'Trade Intelligence Dashboard',     subtitle: 'State-level trade operations, corridors, and revenue' },
   LGAAdmin:                { title: 'LGA Operations Dashboard',        subtitle: 'Local government area trade and enforcement' },
   MarketAdmin:             { title: 'Market Management Portal',        subtitle: 'Market waybills, agents, and partners' },
   Agent:                   { title: 'Trade Agent Portal',              subtitle: 'Manage waybills, shipments, and compliance' },
